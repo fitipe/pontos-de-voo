@@ -72,9 +72,9 @@
     .summary-bar { background: #1a1f2e; border-radius: 8px; padding: 12px 16px; display: flex; gap: 20px; font-size: 13px; }
     .summary-bar .stat { display: flex; align-items: center; gap: 6px; }
     .summary-bar .stat-num { font-size: 20px; font-weight: 700; }
-    .stat-faltando .stat-num { color: #8892a4; }
-    .stat-indo .stat-num { color: #ffa726; }
-    .stat-feito .stat-num { color: #4caf50; }
+    .stat-faltando .stat-num, .stat-faltando .stat-label { color: #8892a4; }
+    .stat-indo .stat-num, .stat-indo .stat-label { color: #ffa726; }
+    .stat-feito .stat-num, .stat-feito .stat-label { color: #4caf50; }
 
     .mapa-wrapper { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 10px; overflow: hidden; }
     .mapa-titulo { padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #636b7d; border-bottom: 1px solid #252b3b; }
@@ -205,15 +205,15 @@
       <div class="summary-bar">
         <div class="stat stat-faltando">
           <div class="stat-num" id="faltando-count">—</div>
-          <div>faltando</div>
+          <div class="stat-label">faltando</div>
         </div>
         <div class="stat stat-indo">
           <div class="stat-num" id="indo-count">0</div>
-          <div>em andamento</div>
+          <div class="stat-label">em andamento</div>
         </div>
         <div class="stat stat-feito">
           <div class="stat-num" id="feito-count-ativo">0</div>
-          <div>concluídos <span id="drive-pendente" style="display:none;font-size:10px;color:#4caf50;">(faltando enviar ao drive)</span></div>
+          <div class="stat-label">concluídos <span id="drive-pendente" style="display:none;font-size:10px;color:#e8eaf0;">(faltando enviar ao drive)</span></div>
         </div>
         </div>
       <div class="mapa-wrapper">
