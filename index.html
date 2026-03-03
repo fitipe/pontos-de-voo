@@ -179,7 +179,7 @@
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="ativos">Pontos Precisando de Registro</button>
-    <button class="tab-btn" data-tab="arquivo" id="tab-arquivo-btn">Pontos Sobrevoados & Registros Enviados ao Drive</button>
+    <button class="tab-btn" data-tab="arquivo" id="tab-arquivo-btn">Pontos já Sobrevoados & Registros Enviados ao Drive</button>
   </div>
 
   <!-- PONTOS ATIVOS -->
@@ -476,8 +476,8 @@
 
       const tabArquivo = document.getElementById('tab-arquivo-btn');
       tabArquivo.textContent = arquivoCount > 0
-        ? `Pontos Sobrevoados & Registros Enviados ao Drive (${arquivoCount})`
-        : 'Pontos Sobrevoados & Registros Enviados ao Drive';
+        ? `Pontos já Sobrevoados & Registros Enviados ao Drive (${arquivoCount})`
+        : 'Pontos já Sobrevoados & Registros Enviados ao Drive';
 
     }, () => {
       document.getElementById('loading-overlay').classList.add('hidden');
