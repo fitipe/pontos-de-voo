@@ -177,6 +177,12 @@
     #status-dot.online::before { background: #4caf50; }
     #status-dot.offline::before { background: #e63946; }
 
+    #pontos-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
     .drive-bar {
       background: #1a1f2e;
       border: 1px solid #252b3b;
@@ -497,6 +503,12 @@
   </header>
 
   <div class="container">
+    <div class="drive-bar">
+      <div class="drive-bar-label">Link para a pasta do Drive:</div>
+      <a href="https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link" target="_blank">https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link</a>
+      <div class="drive-bar-note">*pedir acesso ao drive pelo grupo do whatsapp Auxílio Drone - Defesa Civil</div>
+    </div>
+
     <div class="summary-bar">
       <div class="stat stat-total">
         <div class="stat-num" id="total-count">17</div>
@@ -510,12 +522,6 @@
         <div class="stat-num" id="feito-count">0</div>
         <div>concluídos</div>
       </div>
-    </div>
-
-    <div class="drive-bar">
-      <div class="drive-bar-label">Link para a pasta do Drive:</div>
-      <a href="https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link" target="_blank">https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link</a>
-      <div class="drive-bar-note">*pedir acesso ao drive pelo grupo do whatsapp Auxílio Drone - Defesa Civil</div>
     </div>
 
     <div id="pontos-container"></div>
