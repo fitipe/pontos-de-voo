@@ -492,7 +492,7 @@
       document.getElementById('status-dot').className = 'online';
 
       const data = snapshot.val() || {};
-      let indoCount = 0, feitoCount = 0, driveCount = 0;
+      let indoCount = 0, feitoCount = 0, driveCount = 0, faltandoCount = 0;
       arquivoCount = 0;
 
       pontos.forEach(ponto => {
@@ -538,6 +538,7 @@
           }
           if (indo) indoCount++;
           if (feito) feitoCount++;
+          if (!indo && !feito) faltandoCount++;
         }
       });
 
@@ -545,8 +546,7 @@
         arquivoContainer.innerHTML = '<div class="arquivo-vazio">Nenhum ponto arquivado ainda.</div>';
       }
 
-      const ativos = pontos.length - driveCount;
-      document.getElementById('faltando-count').textContent = ativos - feitoCount;
+      document.getElementById('faltando-count').textContent = faltandoCount;
       document.getElementById('indo-count').textContent = indoCount;
       document.getElementById('feito-count').textContent = `${totalHistorico + driveCount}/${totalRequisitados}`;
 
