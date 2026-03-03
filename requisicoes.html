@@ -172,6 +172,11 @@
       </div>
 
       <div class="section">
+        <div class="section-label">Informações Adicionais (opcional)</div>
+        <textarea id="info-input" rows="3" placeholder="Descreva detalhes relevantes sobre o ponto..." style="background:#0f1117;border:1px solid #252b3b;border-radius:6px;padding:9px 12px;font-size:13px;color:#e8eaf0;outline:none;width:100%;resize:vertical;font-family:inherit;transition:border-color 0.15s;"></textarea>
+      </div>
+
+      <div class="section">
         <div class="section-label">Confirmação</div>
         <div class="confirmacao-box" id="confirmacao-box">
           <div class="conf-vazia">Nenhum ponto selecionado ainda.</div>
@@ -431,7 +436,8 @@
         const bairro = partes[2] || partes[1] || '';
 
         const updates = {};
-        updates[`config/${novoId}`] = { num: proximoNum, rua, bairro, lat: selectedLat, lng: selectedLng, link: linkSelecionado || '', criado_por: nomeOficial };
+        const infoAdicional = document.getElementById('info-input').value.trim();
+        updates[`config/${novoId}`] = { num: proximoNum, rua, bairro, lat: selectedLat, lng: selectedLng, link: linkSelecionado || '', criado_por: nomeOficial, info_adicional: infoAdicional };
         updates[`pontos/${novoId}`] = { indo: false, feito: false, drive: false, responsavel: '' };
         updates['meta/proximo_num'] = proximoNum + 1;
         updates['meta/total_requisitados'] = (meta.total_requisitados || 0) + 1;
@@ -448,6 +454,7 @@
         // Reset form
         document.getElementById('link-input').value = '';
         document.getElementById('endereco-input').value = '';
+        document.getElementById('info-input').value = '';
         document.getElementById('link-status').textContent = '';
         if (mapMarker) { map.removeLayer(mapMarker); mapMarker = null; }
         selectedLat = null; selectedLng = null; selectedEndereco = ''; linkSelecionado = '';
