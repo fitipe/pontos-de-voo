@@ -177,6 +177,28 @@
     #status-dot.online::before { background: #4caf50; }
     #status-dot.offline::before { background: #e63946; }
 
+    .drive-bar {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .drive-bar a {
+      color: #60a5fa;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .drive-bar a:hover { text-decoration: underline; }
+
+    .drive-bar span {
+      font-size: 11px;
+      color: #636b7d;
+    }
+
     .container {
       max-width: 720px;
       margin: 0 auto;
@@ -464,6 +486,11 @@
     </h1>
     <div id="status-dot">Conectando</div>
   </header>
+
+  <div class="drive-bar">
+    <a href="https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link" target="_blank">📂 Pasta no Google Drive</a>
+    <span>*pedir acesso ao drive pelo grupo do whatsapp Auxílio Drone - Defesa Civil</span>
+  </div>
 
   <div class="container">
     <div class="summary-bar">
