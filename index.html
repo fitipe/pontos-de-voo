@@ -27,6 +27,20 @@
     #senha-btn { background: #e63946; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; letter-spacing: 0.5px; transition: background 0.15s; }
     #senha-btn:hover { background: #c62d38; }
 
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 8000; padding: 24px; }
+    .modal-overlay.hidden { display: none; }
+    .modal-box { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 14px; padding: 28px 28px 24px; width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 18px; }
+    .modal-title { font-size: 15px; font-weight: 700; color: #e8eaf0; text-align: center; }
+    .modal-body { font-size: 13px; color: #8892a4; text-align: center; line-height: 1.6; }
+    .modal-body strong { color: #e8eaf0; display: block; margin-bottom: 6px; }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; padding: 12px; cursor: pointer; transition: all 0.15s; }
+    .modal-nao { background: #252b3b; color: #8892a4; }
+    .modal-nao:hover { background: #2f3850; color: #e8eaf0; }
+    .modal-sim { background: #34a853; color: #fff; }
+    .modal-sim:hover { background: #2d9248; }
+
     /* APP */
     #app { display: none; }
     #app.visible { display: block; }
@@ -45,6 +59,14 @@
     .header-drive a:hover { text-decoration: underline; }
     .header-drive .drive-bar-note { font-size: 11px; color: #e8eaf0; }
 
+    /* TABS */
+    .tabs { display: flex; border-bottom: 1px solid #252b3b; background: #1a1f2e; }
+    .tab-btn { padding: 12px 20px; font-size: 13px; font-weight: 600; color: #636b7d; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; white-space: nowrap; }
+    .tab-btn.active { color: #e8eaf0; border-bottom-color: #e63946; }
+    .tab-btn:hover:not(.active) { color: #8892a4; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
     .container { max-width: 720px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 20px; }
 
     .summary-bar { background: #1a1f2e; border-radius: 8px; padding: 12px 16px; display: flex; gap: 20px; font-size: 13px; }
@@ -58,14 +80,16 @@
     .mapa-titulo { padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #636b7d; border-bottom: 1px solid #252b3b; }
     #mapa { height: 420px; }
 
-    #pontos-container { display: flex; flex-direction: column; gap: 16px; }
+    #pontos-container, #arquivo-container { display: flex; flex-direction: column; gap: 16px; }
+    .arquivo-vazio { font-size: 13px; color: #3a4052; text-align: center; padding: 32px 0; }
 
     .card { background: #1a1f2e; border-radius: 10px; overflow: hidden; border: 1px solid #252b3b; transition: border-color 0.2s; }
     .card.status-feito { border-color: #4caf50; }
     .card.status-indo { border-color: #ffa726; }
+    .card.status-arquivado { border-color: #34a853; opacity: 0.85; }
     .card-header { padding: 14px 16px 10px; display: flex; align-items: flex-start; gap: 12px; }
     .point-num { background: #252b3b; color: #8892a4; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 3px 7px; flex-shrink: 0; margin-top: 2px; }
-    .card.status-feito .point-num { background: #1b3a1f; color: #4caf50; }
+    .card.status-feito .point-num, .card.status-arquivado .point-num { background: #1b3a1f; color: #4caf50; }
     .card.status-indo .point-num { background: #3a2a0a; color: #ffa726; }
     .card-title { flex: 1; }
     .card-title h2 { font-size: 14px; font-weight: 600; color: #e8eaf0; line-height: 1.3; }
@@ -84,7 +108,7 @@
 
     .drive-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
     .drive-btn:not(.active):hover { border-color: #34a853; color: #34a853; }
-    .drive-btn.active { border-color: #34a853; background: #0f2a1a; color: #34a853; }
+    .drive-btn.active { border-color: #34a853; background: #0f2a1a; color: #34a853; cursor: default; }
 
     .responsavel-area { display: flex; flex-direction: column; gap: 6px; }
     .responsavel-label { font-size: 11px; color: #636b7d; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -122,6 +146,18 @@
   </div>
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="modal-nao" id="modal-nao">Não</button>
+      <button class="modal-sim" id="modal-sim">Sim</button>
+    </div>
+  </div>
+</div>
+
 <div id="app">
   <div id="loading-overlay">
     <div class="spinner"></div>
@@ -141,28 +177,43 @@
     </div>
   </header>
 
-  <div class="container">
-    <div class="summary-bar">
-      <div class="stat stat-faltando">
-        <div class="stat-num" id="faltando-count">—</div>
-        <div>faltando</div>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="ativos">Pontos Ativos</button>
+    <button class="tab-btn" data-tab="arquivo" id="tab-arquivo-btn">Registrados e Enviados ao Drive</button>
+  </div>
+
+  <!-- PONTOS ATIVOS -->
+  <div class="tab-panel active" id="tab-ativos">
+    <div class="container">
+      <div class="summary-bar">
+        <div class="stat stat-faltando">
+          <div class="stat-num" id="faltando-count">—</div>
+          <div>faltando</div>
+        </div>
+        <div class="stat stat-indo">
+          <div class="stat-num" id="indo-count">0</div>
+          <div>em andamento</div>
+        </div>
+        <div class="stat stat-feito">
+          <div class="stat-num" id="feito-count">0/—</div>
+          <div>concluídos</div>
+        </div>
       </div>
-      <div class="stat stat-indo">
-        <div class="stat-num" id="indo-count">0</div>
-        <div>em andamento</div>
+      <div class="mapa-wrapper">
+        <div class="mapa-titulo">Mapa dos Pontos</div>
+        <div id="mapa"></div>
       </div>
-      <div class="stat stat-feito">
-        <div class="stat-num" id="feito-count">0/—</div>
-        <div>concluídos</div>
+      <div id="pontos-container"></div>
+    </div>
+  </div>
+
+  <!-- ARQUIVO -->
+  <div class="tab-panel" id="tab-arquivo">
+    <div class="container">
+      <div id="arquivo-container">
+        <div class="arquivo-vazio">Nenhum ponto arquivado ainda.</div>
       </div>
     </div>
-
-    <div class="mapa-wrapper">
-      <div class="mapa-titulo">Mapa dos Pontos</div>
-      <div id="mapa"></div>
-    </div>
-
-    <div id="pontos-container"></div>
   </div>
 </div>
 
@@ -183,6 +234,17 @@
 
   const SENHA = "jfdrone";
 
+  // MODAL
+  function showModal(title, body, onSim) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = body;
+    document.getElementById('modal').classList.remove('hidden');
+    const close = () => document.getElementById('modal').classList.add('hidden');
+    document.getElementById('modal-nao').onclick = close;
+    document.getElementById('modal-sim').onclick = () => { close(); onSim(); };
+  }
+
+  // AUTH
   function checkSenha() {
     if (sessionStorage.getItem('auth') === '1') {
       document.getElementById('senha-screen').classList.add('hidden');
@@ -216,10 +278,19 @@
     initFirebase();
   }
 
+  // TABS
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+    });
+  });
+
   async function initFirebase() {
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
-
     let pontos = [], totalRequisitados = 0, totalHistorico = 0;
 
     try {
@@ -246,7 +317,10 @@
 
   function buildUI(db, pontos, totalRequisitados, totalHistorico) {
     const container = document.getElementById('pontos-container');
+    const arquivoContainer = document.getElementById('arquivo-container');
+    let arquivoCount = 0;
 
+    // Cria todos os cards
     pontos.forEach(ponto => {
       const card = document.createElement('div');
       card.className = 'card';
@@ -265,7 +339,7 @@
             <button class="check-btn indo-btn" data-id="${ponto.id}" data-field="indo">✈️ Indo Voar</button>
             <button class="check-btn feito-btn" data-id="${ponto.id}" data-field="feito">✅ Vôo Concluído</button>
           </div>
-          <button class="drive-btn" data-id="${ponto.id}" data-field="drive">📁 Arquivos enviados para o Drive</button>
+          <button class="drive-btn" data-id="${ponto.id}">📁 Arquivos enviados para o Drive</button>
           <div class="responsavel-area">
             <div class="responsavel-label">Piloto(s) responsável</div>
             <div class="responsavel-display" id="display-${ponto.id}"></div>
@@ -289,8 +363,8 @@
     });
     setTimeout(() => map.invalidateSize(), 300);
 
-    // Botões
-    document.querySelectorAll('.check-btn, .drive-btn').forEach(btn => {
+    // Botões indo/feito
+    document.querySelectorAll('.check-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const { id, field } = btn.dataset;
         const updates = {};
@@ -299,6 +373,26 @@
       });
     });
 
+    // Botão drive → confirmação
+    document.querySelectorAll('.drive-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('active')) return; // já arquivado
+        const id  = btn.dataset.id;
+        const card = document.getElementById(`card-${id}`);
+        const rua  = card.querySelector('h2').textContent;
+        showModal(
+          'Confirmar envio ao Drive?',
+          `<strong>${rua}</strong>Você confirma que realizou o vôo e enviou os arquivos para o Drive com sucesso?`,
+          () => {
+            const updates = {};
+            updates[`pontos/${id}/drive`] = true;
+            update(ref(db, '/'), updates);
+          }
+        );
+      });
+    });
+
+    // Registrar responsável
     document.querySelectorAll('.add-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
@@ -326,34 +420,68 @@
       document.getElementById('status-dot').className = 'online';
 
       const data = snapshot.val() || {};
-      let indoCount = 0, feitoCount = 0;
+      let indoCount = 0, feitoCount = 0, driveCount = 0;
+      arquivoCount = 0;
 
       pontos.forEach(ponto => {
         const state = data[ponto.id] || {};
         const indo  = !!state.indo;
         const feito = !!state.feito;
+        const drive = !!state.drive;
 
         document.querySelector(`.indo-btn[data-id="${ponto.id}"]`)?.classList.toggle('active', indo);
         document.querySelector(`.feito-btn[data-id="${ponto.id}"]`)?.classList.toggle('active', feito);
-        document.querySelector(`.drive-btn[data-id="${ponto.id}"]`)?.classList.toggle('active', !!state.drive);
+        const driveBtn = document.querySelector(`.drive-btn[data-id="${ponto.id}"]`);
+        if (driveBtn) driveBtn.classList.toggle('active', drive);
+
         const display = document.getElementById(`display-${ponto.id}`);
         if (display) display.textContent = state.responsavel || '';
 
         const card = document.getElementById(`card-${ponto.id}`);
-        if (card) { card.classList.toggle('status-feito', feito); card.classList.toggle('status-indo', indo && !feito); }
+        if (!card) return;
 
-        if (mapaMarkers[ponto.id]) {
-          if (feito) { mapaMarkers[ponto.id].setStyle({ opacity:0, fillOpacity:0 }); }
-          else { const cor = indo ? '#ffa726' : '#e63946'; mapaMarkers[ponto.id].setStyle({ color:cor, fillColor:cor, opacity:1, fillOpacity:0.85 }); }
+        if (drive) {
+          // Mover para aba de arquivo se ainda estiver na aba ativa
+          if (card.parentElement === container) {
+            arquivoContainer.querySelector('.arquivo-vazio')?.remove();
+            arquivoContainer.appendChild(card);
+          }
+          card.className = 'card status-arquivado';
+          if (mapaMarkers[ponto.id]) mapaMarkers[ponto.id].setStyle({ opacity:0, fillOpacity:0 });
+          driveCount++;
+          arquivoCount++;
+        } else {
+          // Mover de volta para aba ativa se necessário
+          if (card.parentElement === arquivoContainer) {
+            container.appendChild(card);
+          }
+          card.classList.toggle('status-feito', feito);
+          card.classList.toggle('status-indo', indo && !feito);
+          if (!card.classList.contains('status-feito') && !card.classList.contains('status-indo')) {
+            card.className = 'card';
+          }
+          if (mapaMarkers[ponto.id]) {
+            if (feito) { mapaMarkers[ponto.id].setStyle({ opacity:0, fillOpacity:0 }); }
+            else { const cor = indo ? '#ffa726' : '#e63946'; mapaMarkers[ponto.id].setStyle({ color:cor, fillColor:cor, opacity:1, fillOpacity:0.85 }); }
+          }
+          if (indo) indoCount++;
+          if (feito) feitoCount++;
         }
-
-        if (indo) indoCount++;
-        if (feito) feitoCount++;
       });
 
-      document.getElementById('faltando-count').textContent = pontos.length - feitoCount;
+      if (arquivoContainer.children.length === 0) {
+        arquivoContainer.innerHTML = '<div class="arquivo-vazio">Nenhum ponto arquivado ainda.</div>';
+      }
+
+      const ativos = pontos.length - driveCount;
+      document.getElementById('faltando-count').textContent = ativos - feitoCount;
       document.getElementById('indo-count').textContent = indoCount;
-      document.getElementById('feito-count').textContent = `${totalHistorico + feitoCount}/${totalRequisitados}`;
+      document.getElementById('feito-count').textContent = `${totalHistorico + driveCount}/${totalRequisitados}`;
+
+      const tabArquivo = document.getElementById('tab-arquivo-btn');
+      tabArquivo.textContent = arquivoCount > 0
+        ? `Registrados e Enviados ao Drive (${arquivoCount})`
+        : 'Registrados e Enviados ao Drive';
 
     }, () => {
       document.getElementById('loading-overlay').classList.add('hidden');
