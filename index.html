@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defesa Civil JF — Missões 03/Mar</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0f1117;
+      color: #e8eaf0;
+      min-height: 100vh;
+    }
+
+    /* ── SENHA ── */
+    #senha-screen {
+      position: fixed;
+      inset: 0;
+      background: #0f1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 24px;
+    }
+
+    #senha-screen.hidden { display: none; }
+
+    .senha-card {
+      background: #1a1f2e;
+      border: 1px solid #252b3b;
+      border-radius: 14px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .senha-title {
+      text-align: center;
+    }
+
+    .senha-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #e8eaf0;
+    }
+
+    .senha-title p {
+      font-size: 12px;
+      color: #8892a4;
+      margin-top: 4px;
+    }
+
+    .senha-divider {
+      height: 2px;
+      background: #e63946;
+      border-radius: 2px;
+    }
+
+    .senha-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .senha-field label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #636b7d;
+    }
+
+    #senha-input {
+      background: #0f1117;
+      border: 1.5px solid #252b3b;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 16px;
+      color: #e8eaf0;
+      letter-spacing: 3px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    #senha-input:focus { border-color: #4a5568; }
+    #senha-input.error { border-color: #e63946; animation: shake 0.3s; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    #senha-error {
+      font-size: 12px;
+      color: #e63946;
+      min-height: 16px;
+      text-align: center;
+    }
+
+    #senha-btn {
+      background: #e63946;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 13px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.15s;
+    }
+    #senha-btn:hover { background: #c62d38; }
+
+    /* ── APP ── */
+    #app { display: none; }
+    #app.visible { display: block; }
+
+    header {
+      background: #1a1f2e;
+      border-bottom: 2px solid #e63946;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1.3;
+    }
+
+    header h1 span {
+      display: block;
+      font-size: 11px;
+      color: #8892a4;
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    #status-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #8892a4;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    #status-dot::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #888;
+      transition: background 0.3s;
+    }
+
+    #status-dot.online::before { background: #4caf50; }
+    #status-dot.offline::before { background: #e63946; }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .summary-bar {
+      background: #1a1f2e;
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 20px;
+      font-size: 13px;
+    }
+
+    .summary-bar .stat { display: flex; align-items: center; gap: 6px; }
+    .summary-bar .stat-num { font-size: 20px; font-weight: 700; }
+    .stat-indo .stat-num { color: #ffa726; }
+    .stat-feito .stat-num { color: #4caf50; }
+    .stat-total .stat-num { color: #8892a4; }
+
+    .card {
+      background: #1a1f2e;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #252b3b;
+      transition: border-color 0.2s;
+    }
+
+    .card.status-feito { border-color: #4caf50; }
+    .card.status-indo { border-color: #ffa726; }
+
+    .card-header {
+      padding: 14px 16px 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .point-num {
+      background: #252b3b;
+      color: #8892a4;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 5px;
+      padding: 3px 7px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .card.status-feito .point-num { background: #1b3a1f; color: #4caf50; }
+    .card.status-indo .point-num { background: #3a2a0a; color: #ffa726; }
+
+    .card-title { flex: 1; }
+
+    .card-title h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e8eaf0;
+      line-height: 1.3;
+    }
+
+    .card-title .bairro {
+      font-size: 12px;
+      color: #8892a4;
+      margin-top: 2px;
+    }
+
+    .card-obs {
+      font-size: 12px;
+      color: #636b7d;
+      padding: 0 16px 10px;
+      line-height: 1.5;
+      border-bottom: 1px solid #252b3b;
+    }
+
+    .card-actions {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Maps + checkboxes na mesma linha */
+    .actions-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .maps-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #1e3a5f;
+      color: #60a5fa;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 11px;
+      border-radius: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .maps-btn:hover { background: #264b7a; }
+
+    .checkboxes {
+      display: flex;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .check-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 7px 6px;
+      border-radius: 6px;
+      border: 1.5px solid #252b3b;
+      background: transparent;
+      color: #8892a4;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .check-btn.indo-btn:not(.active):hover { border-color: #ffa726; color: #ffa726; }
+    .check-btn.feito-btn:not(.active):hover { border-color: #4caf50; color: #4caf50; }
+
+    .check-btn.indo-btn.active {
+      border-color: #ffa726;
+      background: #3a2a0a;
+      color: #ffa726;
+    }
+
+    .check-btn.feito-btn.active {
+      border-color: #4caf50;
+      background: #1b3a1f;
+      color: #4caf50;
+    }
+
+    /* Linha sem maps btn: checkboxes ocupam tudo */
+    .actions-top.no-map .checkboxes { flex: 1; }
+
+    .responsavel-area {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .responsavel-label {
+      font-size: 11px;
+      color: #636b7d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .responsavel-display {
+      background: #0f1117;
+      border: 1px solid #252b3b;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13px;
+      color: #e8eaf0;
+      min-height: 32px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .responsavel-display:empty::before {
+      content: '—';
+      color: #3a4052;
+    }
+
+    .add-form {
+      display: flex;
+      gap: 8px;
+    }
+
+    .add-input {
+      flex: 1;
+      background: #0f1117;
+      border: 1px solid #252b3b;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13px;
+      color: #e8eaf0;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .add-input:focus { border-color: #4a5568; }
+    .add-input::placeholder { color: #3a4052; }
+
+    .add-btn {
+      background: #252b3b;
+      border: none;
+      border-radius: 6px;
+      color: #8892a4;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .add-btn:hover { background: #2f3850; color: #e8eaf0; }
+
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: #0f1117;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 200;
+      transition: opacity 0.3s;
+    }
+    #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #252b3b;
+      border-top-color: #e63946;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading-overlay p { font-size: 13px; color: #8892a4; }
+  </style>
+</head>
+<body>
+
+<!-- TELA DE SENHA -->
+<div id="senha-screen">
+  <div class="senha-card">
+    <div class="senha-title">
+      <h1>Defesa Civil JF</h1>
+      <p>Coordenação de Voos — 03/Mar/2026</p>
+    </div>
+    <div class="senha-divider"></div>
+    <div class="senha-field">
+      <label>Senha</label>
+      <input id="senha-input" type="password" autocomplete="off" placeholder="••••••••">
+      <div id="senha-error"></div>
+    </div>
+    <button id="senha-btn">Entrar</button>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div id="app">
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Conectando...</p>
+  </div>
+
+  <header>
+    <h1>
+      Defesa Civil JF — Missões
+      <span>03 de Março de 2026</span>
+    </h1>
+    <div id="status-dot">Conectando</div>
+  </header>
+
+  <div class="container">
+    <div class="summary-bar">
+      <div class="stat stat-total">
+        <div class="stat-num" id="total-count">17</div>
+        <div>pontos</div>
+      </div>
+      <div class="stat stat-indo">
+        <div class="stat-num" id="indo-count">0</div>
+        <div>em andamento</div>
+      </div>
+      <div class="stat stat-feito">
+        <div class="stat-num" id="feito-count">0</div>
+        <div>concluídos</div>
+      </div>
+    </div>
+
+    <div id="pontos-container"></div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+  // ── SENHA ──
+  const SENHA = "jfdrone";
+
+  function checkSenha() {
+    if (sessionStorage.getItem('auth') === '1') {
+      document.getElementById('senha-screen').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      return true;
+    }
+    return false;
+  }
+
+  if (!checkSenha()) {
+    const input = document.getElementById('senha-input');
+    const btn = document.getElementById('senha-btn');
+    const erro = document.getElementById('senha-error');
+
+    function tentarSenha() {
+      if (input.value === SENHA) {
+        sessionStorage.setItem('auth', '1');
+        document.getElementById('senha-screen').classList.add('hidden');
+        document.getElementById('app').classList.add('visible');
+        initFirebase();
+      } else {
+        erro.textContent = 'Senha incorreta.';
+        input.classList.add('error');
+        input.value = '';
+        setTimeout(() => input.classList.remove('error'), 400);
+        input.focus();
+      }
+    }
+
+    btn.addEventListener('click', tentarSenha);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') tentarSenha(); });
+  } else {
+    initFirebase();
+  }
+
+  // ── FIREBASE ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
+    authDomain: "pontos-de-voo.firebaseapp.com",
+    databaseURL: "https://pontos-de-voo-default-rtdb.firebaseio.com",
+    projectId: "pontos-de-voo",
+    storageBucket: "pontos-de-voo.firebasestorage.app",
+    messagingSenderId: "867032863146",
+    appId: "1:867032863146:web:a38094016b457fc1c59bd3"
+  };
+
+  const PONTOS = [
+    { id:"p01", num:"01", rua:"Rua Antônio Espanhol Celeste", bairro:"Jardim Olímpia", obs:"Abranger área da Avenida Santa Luzia no trecho imediatamente à área atingida por deslizamento", link:"https://maps.app.goo.gl/JUJ6aFZ59u9GUFDv9" },
+    { id:"p02", num:"02", rua:"Avenida Otávio Dias Moreira", bairro:"Bom Clima", obs:"Abranger área onde ocorreu escorregamento da margem do Córrego", link:"https://maps.app.goo.gl/GgNYhiKRwHQtVERJ9" },
+    { id:"p03", num:"03", rua:"Rua Rodolfo Euzébio de Carvalho", bairro:"Nossa Sra. Lourdes", obs:"Abranger área onde ocorreu escorregamento de talude e colapso de edificações", link:"https://maps.app.goo.gl/Jym4KbqncuD8M7qV8" },
+    { id:"p04", num:"04", rua:"Rua Luiz Zudio", bairro:"Serro Azul", obs:"Abranger área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/xtvx45US4jrj46Pc9" },
+    { id:"p05", num:"05", rua:"Rua Luiz José Esteves", bairro:"Serro Azul", obs:"Abranger área onde ocorreu escorregamento de talude que danificou infraestrutura da via", link:"https://maps.app.goo.gl/SnGNxf1UeepMVi4i6" },
+    { id:"p06", num:"06", rua:"Rua Ouro Fino", bairro:"Bonfim", obs:"Abranger a área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/xXYECBgHKfsxpKg47" },
+    { id:"p07", num:"07", rua:"Rua Artesão Antônio de Oliveira", bairro:"", obs:"Abranger a área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/f25ipR8ADRbZNNfa8" },
+    { id:"p08", num:"08", rua:"Avenida Luiza Vitória Fernandes", bairro:"Santa Cruz", obs:"Abranger a área onde ocorreu escorregamento de talude às margens do Córrego", link:"https://maps.app.goo.gl/mPgXnadRno2o4Twe9" },
+    { id:"p09", num:"09", rua:"Rua São Pancrácio", bairro:"São Tarcísio", obs:"Caso possível tentar abranger toda a extensão da via — Pontos de escorregamento", link:"https://maps.app.goo.gl/iX5kgzWKKXFUwe5j6" },
+    { id:"p10", num:"10", rua:"Rua Orlando Stephani", bairro:"Ipiranga", obs:"Caso possível tentar abranger toda a extensão do escadão, trecho danificado", link:"https://maps.app.goo.gl/AafmBVTVfT3WS8GEA" },
+    { id:"p11", num:"11", rua:"Rua Antônio Homem da Rocha", bairro:"Teixeiras", obs:"Ponto de escorregamento", link:"https://maps.app.goo.gl/yXrL11DZqHfA1UbEA" },
+    { id:"p12", num:"12", rua:"Rua São Vicente", bairro:"Costa Carvalho", obs:"", link:"https://maps.app.goo.gl/VH7n2xbiFqXCeWXp8" },
+    { id:"p13", num:"13", rua:"Rua Primeira Vitória", bairro:"Santo Antônio", obs:"", link:"https://maps.app.goo.gl/QUAhEqYjzSioxR8WA" },
+    { id:"p14", num:"14", rua:"Rua Coronel Sebastião Halfeld", bairro:"Miguel Marinho", obs:"", link:"" },
+    { id:"p15", num:"15", rua:"Rua Diva Garcia, 3006", bairro:"Linhares", obs:"Escorregamento", link:"https://maps.app.goo.gl/iMmaMb8NkzV8SbwK8" },
+    { id:"p16", num:"16", rua:"Rua Diva Garcia, 1225", bairro:"Bom Jardim", obs:"Escorregamentos de margem fluvial", link:"https://maps.app.goo.gl/mJgXbQSXiFUWRiuJ8" },
+    { id:"p17", num:"17", rua:"Rua Dr. Moacir de Castro Xavier", bairro:"Bom Jardim", obs:"", link:"" }
+  ];
+
+  function initFirebase() {
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    buildUI(db);
+  }
+
+  function buildUI(db) {
+    const container = document.getElementById('pontos-container');
+
+    PONTOS.forEach(ponto => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.id = `card-${ponto.id}`;
+
+      const mapsHtml = ponto.link
+        ? `<a class="maps-btn" href="${ponto.link}" target="_blank">📍 Maps</a>`
+        : '';
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="point-num">${ponto.num}</div>
+          <div class="card-title">
+            <h2>${ponto.rua}</h2>
+            ${ponto.bairro ? `<div class="bairro">${ponto.bairro}</div>` : ''}
+          </div>
+        </div>
+        ${ponto.obs ? `<div class="card-obs">${ponto.obs}</div>` : ''}
+        <div class="card-actions">
+          <div class="actions-top${ponto.link ? '' : ' no-map'}">
+            ${mapsHtml}
+            <div class="checkboxes">
+              <button class="check-btn indo-btn" data-id="${ponto.id}" data-field="indo">✈️ Indo fazer</button>
+              <button class="check-btn feito-btn" data-id="${ponto.id}" data-field="feito">✅ Feito</button>
+            </div>
+          </div>
+          <div class="responsavel-area">
+            <div class="responsavel-label">Piloto(s) responsável</div>
+            <div class="responsavel-display" id="display-${ponto.id}"></div>
+            <div class="add-form">
+              <input class="add-input" id="input-${ponto.id}" type="text" placeholder="Seu nome e telefone">
+              <button class="add-btn" data-id="${ponto.id}">Registrar</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+    document.querySelectorAll('.check-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const field = btn.dataset.field;
+        const isActive = btn.classList.contains('active');
+        const updates = {};
+        updates[`pontos/${id}/${field}`] = !isActive;
+        update(ref(db, '/'), updates);
+      });
+    });
+
+    document.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const input = document.getElementById(`input-${id}`);
+        const nome = input.value.trim();
+        if (!nome) return;
+        const pontoRef = ref(db, `pontos/${id}`);
+        get(pontoRef).then(snap => {
+          const atual = snap.val()?.responsavel || '';
+          const novo = atual ? `${atual}\n${nome}` : nome;
+          update(ref(db, '/'), { [`pontos/${id}/responsavel`]: novo });
+          input.value = '';
+        });
+      });
+    });
+
+    document.querySelectorAll('.add-input').forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          const id = input.id.replace('input-', '');
+          document.querySelector(`.add-btn[data-id="${id}"]`).click();
+        }
+      });
+    });
+
+    const pontosRef = ref(db, 'pontos');
+    onValue(pontosRef, (snapshot) => {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      document.getElementById('status-dot').textContent = 'Ao vivo';
+      document.getElementById('status-dot').className = 'online';
+
+      const data = snapshot.val() || {};
+
+      PONTOS.forEach(ponto => {
+        const state = data[ponto.id] || {};
+        const indo = !!state.indo;
+        const feito = !!state.feito;
+
+        document.querySelector(`.indo-btn[data-id="${ponto.id}"]`).classList.toggle('active', indo);
+        document.querySelector(`.feito-btn[data-id="${ponto.id}"]`).classList.toggle('active', feito);
+        document.getElementById(`display-${ponto.id}`).textContent = state.responsavel || '';
+
+        updateCardStatus(ponto.id);
+      });
+
+      updateSummary();
+    }, () => {
+      document.getElementById('loading-overlay').classList.add('hidden');
+      document.getElementById('status-dot').textContent = 'Erro';
+      document.getElementById('status-dot').className = 'offline';
+    });
+  }
+
+  function updateCardStatus(id) {
+    const card = document.getElementById(`card-${id}`);
+    const feito = card.querySelector('.feito-btn').classList.contains('active');
+    const indo = card.querySelector('.indo-btn').classList.contains('active');
+    card.classList.toggle('status-feito', feito);
+    card.classList.toggle('status-indo', indo && !feito);
+  }
+
+  function updateSummary() {
+    let indo = 0, feito = 0;
+    document.querySelectorAll('.card').forEach(card => {
+      if (card.classList.contains('status-feito')) feito++;
+      else if (card.classList.contains('status-indo')) indo++;
+    });
+    document.getElementById('indo-count').textContent = indo;
+    document.getElementById('feito-count').textContent = feito;
+  }
+</script>
+</body>
+</html>
