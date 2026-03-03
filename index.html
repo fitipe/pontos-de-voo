@@ -211,6 +211,10 @@
           <div class="stat-num" id="indo-count">0</div>
           <div>em andamento</div>
         </div>
+        <div class="stat stat-feito">
+          <div class="stat-num" id="feito-count-ativo">0</div>
+          <div>concluídos <span id="drive-pendente" style="display:none;font-size:10px;color:#4caf50;">(faltando enviar ao drive)</span></div>
+        </div>
         </div>
       <div class="mapa-wrapper">
         <div class="mapa-titulo">Mapa dos Pontos</div>
@@ -533,7 +537,7 @@
             card.className = 'card';
           }
           if (mapaMarkers[ponto.id]) {
-            if (feito) { mapaMarkers[ponto.id].setStyle({ opacity:0, fillOpacity:0 }); }
+            if (feito) { mapaMarkers[ponto.id].setStyle({ color:'#4caf50', fillColor:'#4caf50', opacity:1, fillOpacity:0.85 }); }
             else { const cor = indo ? '#ffa726' : '#e63946'; mapaMarkers[ponto.id].setStyle({ color:cor, fillColor:cor, opacity:1, fillOpacity:0.85 }); }
           }
           if (indo) indoCount++;
@@ -548,6 +552,9 @@
 
       document.getElementById('faltando-count').textContent = faltandoCount;
       document.getElementById('indo-count').textContent = indoCount;
+      document.getElementById('feito-count-ativo').textContent = feitoCount;
+      const drivePendente = document.getElementById('drive-pendente');
+      if (drivePendente) drivePendente.style.display = feitoCount > 0 ? '' : 'none';
       document.getElementById('feito-count').textContent = `${totalHistorico + driveCount}/${totalRequisitados}`;
 
       const tabArquivo = document.getElementById('tab-arquivo-btn');
