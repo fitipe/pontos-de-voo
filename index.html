@@ -127,10 +127,16 @@
     header {
       background: #1a1f2e;
       border-bottom: 2px solid #e63946;
-      padding: 16px 20px;
+      padding: 16px 20px 20px;
       position: sticky;
       top: 0;
       z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -153,6 +159,33 @@
       font-weight: 400;
       text-transform: none;
       letter-spacing: 0;
+    }
+
+    .header-drive {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .header-drive .drive-bar-label {
+      font-size: 11px;
+      color: #e8eaf0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .header-drive a {
+      color: #60a5fa;
+      font-size: 12px;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .header-drive a:hover { text-decoration: underline; }
+
+    .header-drive .drive-bar-note {
+      font-size: 11px;
+      color: #e8eaf0;
     }
 
     #status-dot {
@@ -512,19 +545,20 @@
   </div>
 
   <header>
-    <h1>
-      Pontos de Voo
-      <span>03 de Março de 2026</span>
-    </h1>
-    <div id="status-dot">Conectando</div>
+    <div class="header-top">
+      <h1>
+        Pontos de Vôo
+        <span>03 de Março de 2026</span>
+      </h1>
+      <div id="status-dot">Conectando</div>
+    </div>
+    <div class="header-drive">
+      <div class="drive-bar-label">Link para a pasta do Drive:</div>
+      <a href="https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link" target="_blank">https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link</a>
+      <div class="drive-bar-note">*pedir acesso ao drive pelo grupo do whatsapp Auxílio Drone - Defesa Civil</div>
+      <div class="drive-bar-note">**se por algum motivo não puder ou não conseguir enviar os arquivos através do Drive, favor entrar em contato com fitipe no mesmo grupo do whatsapp</div>
+    </div>
   </header>
-
-  <div class="drive-bar">
-    <div class="drive-bar-label">Link para a pasta do Drive:</div>
-    <a href="https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link" target="_blank">https://drive.google.com/drive/folders/1IueQLU1f4W5Fqo82iLMdtWjlvheQU0LO?usp=drive_link</a>
-    <div class="drive-bar-note">*pedir acesso ao drive pelo grupo do whatsapp Auxílio Drone - Defesa Civil</div>
-    <div class="drive-bar-note">**se por algum motivo não puder ou não conseguir enviar os arquivos através do Drive, favor entrar em contato com fitipe no mesmo grupo do whatsapp</div>
-  </div>
 
   <div class="container">
     <div class="summary-bar">
@@ -542,12 +576,12 @@
       </div>
     </div>
 
-    <div id="pontos-container"></div>
-
     <div class="mapa-wrapper">
       <div class="mapa-titulo">Mapa dos Pontos</div>
       <div id="mapa"></div>
     </div>
+
+    <div id="pontos-container"></div>
   </div>
 
 </div>
