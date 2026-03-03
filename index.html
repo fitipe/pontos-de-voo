@@ -541,7 +541,7 @@
             if (feito) { mapaMarkers[ponto.id].setStyle({ color:'#4caf50', fillColor:'#4caf50', opacity:1, fillOpacity:0.85 }); }
             else { const cor = indo ? '#ffa726' : '#e63946'; mapaMarkers[ponto.id].setStyle({ color:cor, fillColor:cor, opacity:1, fillOpacity:0.85 }); }
           }
-          if (indo) indoCount++;
+          if (indo && !feito) indoCount++;
           if (feito) feitoCount++;
           if (!indo && !feito) faltandoCount++;
         }
