@@ -69,9 +69,10 @@
 
     .container { max-width: 720px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 20px; }
 
-    .summary-bar { background: #1a1f2e; border-radius: 8px; padding: 12px 16px; display: flex; gap: 20px; font-size: 13px; }
-    .summary-bar .stat { display: flex; align-items: center; gap: 6px; }
+    .summary-bar { background: #1a1f2e; border-radius: 8px; padding: 12px 16px; display: flex; gap: 20px; font-size: 13px; align-items: baseline; }
+    .summary-bar .stat { display: flex; align-items: baseline; gap: 6px; }
     .summary-bar .stat-num { font-size: 20px; font-weight: 700; }
+    .summary-bar .stat-label { font-size: 15px; }
     .stat-faltando .stat-num, .stat-faltando .stat-label { color: #e63946; }
     .stat-indo .stat-num, .stat-indo .stat-label { color: #ffa726; }
     .stat-feito .stat-num, .stat-feito .stat-label { color: #4caf50; }
