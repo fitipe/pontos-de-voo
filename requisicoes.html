@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requisição de Voo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; }
+
+    /* SENHA */
+    #senha-screen { position: fixed; inset: 0; background: #0f1117; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; }
+    #senha-screen.hidden { display: none; }
+    .senha-card { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 14px; padding: 36px 32px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 20px; }
+    .senha-title { text-align: center; }
+    .senha-title h1 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #e8eaf0; }
+    .senha-title p { font-size: 12px; color: #8892a4; margin-top: 4px; }
+    .senha-divider { height: 2px; background: #e63946; border-radius: 2px; }
+    .senha-field { display: flex; flex-direction: column; gap: 8px; }
+    .senha-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #636b7d; }
+    #senha-input { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 8px; padding: 12px 14px; font-size: 16px; color: #e8eaf0; letter-spacing: 3px; outline: none; width: 100%; }
+    #senha-input.error { border-color: #e63946; animation: shake 0.3s; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    #senha-error { font-size: 12px; color: #e63946; min-height: 16px; text-align: center; }
+    #senha-btn { background: #e63946; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; transition: background 0.15s; }
+    #senha-btn:hover { background: #c62d38; }
+
+    /* APP */
+    #app { display: none; }
+    #app.visible { display: block; }
+
+    header { background: #1a1f2e; border-bottom: 2px solid #e63946; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 15px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3; }
+    header h1 span { display: block; font-size: 11px; color: #8892a4; font-weight: 400; text-transform: none; letter-spacing: 0; }
+    .header-link { font-size: 12px; color: #60a5fa; text-decoration: none; }
+    .header-link:hover { text-decoration: underline; }
+
+    .container { max-width: 720px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+
+    .section { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #636b7d; }
+
+    .field-row { display: flex; gap: 8px; }
+    .field-row input { flex: 1; }
+
+    input[type="text"], textarea {
+      background: #0f1117; border: 1px solid #252b3b; border-radius: 6px;
+      padding: 9px 12px; font-size: 13px; color: #e8eaf0; outline: none;
+      width: 100%; transition: border-color 0.15s;
+    }
+    input[type="text"]:focus, textarea:focus { border-color: #4a5568; }
+    input[type="text"]::placeholder, textarea::placeholder { color: #3a4052; }
+
+    .btn {
+      border: none; border-radius: 6px; font-size: 12px; font-weight: 700;
+      padding: 9px 16px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .btn-secondary { background: #252b3b; color: #8892a4; }
+    .btn-secondary:hover { background: #2f3850; color: #e8eaf0; }
+    .btn-primary { background: #e63946; color: #fff; }
+    .btn-primary:hover { background: #c62d38; }
+    .btn-primary:disabled { background: #3a2a2b; color: #636b7d; cursor: not-allowed; }
+
+    #mapa-req { height: 360px; border-radius: 6px; overflow: hidden; }
+
+    .confirmacao {
+      background: #0f1117; border: 1px solid #252b3b; border-radius: 6px;
+      padding: 12px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .confirmacao-label { font-size: 11px; color: #636b7d; text-transform: uppercase; letter-spacing: 0.5px; }
+    .confirmacao-endereco { font-size: 14px; font-weight: 600; color: #e8eaf0; }
+    .confirmacao-coords { font-size: 11px; color: #8892a4; font-family: monospace; }
+    .confirmacao-vazia { font-size: 13px; color: #3a4052; }
+
+    #status-envio { font-size: 13px; text-align: center; min-height: 20px; }
+    #status-envio.ok { color: #4caf50; }
+    #status-envio.erro { color: #e63946; }
+
+    .hint { font-size: 11px; color: #636b7d; line-height: 1.5; }
+    .hint a { color: #60a5fa; }
+  </style>
+</head>
+<body>
+
+<div id="senha-screen">
+  <div class="senha-card">
+    <div class="senha-title">
+      <h1>Requisição de Voo</h1>
+      <p>Acesso restrito — Defesa Civil</p>
+    </div>
+    <div class="senha-divider"></div>
+    <div class="senha-field">
+      <label>Senha</label>
+      <input id="senha-input" type="password" autocomplete="off" placeholder="••••••••">
+      <div id="senha-error"></div>
+    </div>
+    <button id="senha-btn">Entrar</button>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <h1>Requisição de Voo <span>Defesa Civil JF</span></h1>
+    <a class="header-link" href="index.html">← Ver página de pilotos</a>
+  </header>
+
+  <div class="container">
+
+    <!-- Link Google Maps -->
+    <div class="section">
+      <div class="section-label">Link do Google Maps (opcional)</div>
+      <div class="field-row">
+        <input type="text" id="link-input" placeholder="Cole a URL completa do Google Maps...">
+        <button class="btn btn-secondary" id="btn-checar">Checar Link</button>
+      </div>
+      <div class="hint">
+        Cole a URL completa da barra do navegador (ex: google.com/maps/place/.../@-21.79,-43.34,...).
+        Para links curtos (maps.app.goo.gl), abra o link primeiro e copie a URL completa.
+      </div>
+      <div id="link-status" style="font-size:12px; min-height:16px;"></div>
+    </div>
+
+    <!-- Endereço -->
+    <div class="section">
+      <div class="section-label">Endereço</div>
+      <div class="field-row">
+        <input type="text" id="endereco-input" placeholder="Rua, número — Bairro, Juiz de Fora">
+        <button class="btn btn-secondary" id="btn-buscar">Buscar no Mapa</button>
+      </div>
+      <div class="hint">Digite o endereço e clique em "Buscar no Mapa" — ou clique diretamente no mapa para preencher o endereço automaticamente.</div>
+      <div id="mapa-req"></div>
+    </div>
+
+    <!-- Confirmação -->
+    <div class="section">
+      <div class="section-label">Confirmação</div>
+      <div class="confirmacao" id="confirmacao-box">
+        <div class="confirmacao-vazia">Nenhum ponto selecionado ainda.</div>
+      </div>
+    </div>
+
+    <!-- Enviar -->
+    <div class="section" style="gap:12px;">
+      <div id="status-envio"></div>
+      <button class="btn btn-primary" id="btn-enviar" disabled>Enviar Requisição</button>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
+    authDomain: "pontos-de-voo.firebaseapp.com",
+    databaseURL: "https://pontos-de-voo-default-rtdb.firebaseio.com",
+    projectId: "pontos-de-voo",
+    storageBucket: "pontos-de-voo.firebasestorage.app",
+    messagingSenderId: "867032863146",
+    appId: "1:867032863146:web:a38094016b457fc1c59bd3"
+  };
+
+  const SENHA = "pedirvoos";
+
+  // Auth
+  function checkSenha() {
+    if (sessionStorage.getItem('auth_req') === '1') {
+      document.getElementById('senha-screen').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      return true;
+    }
+    return false;
+  }
+
+  if (!checkSenha()) {
+    const input = document.getElementById('senha-input');
+    const btn   = document.getElementById('senha-btn');
+    const erro  = document.getElementById('senha-error');
+    function tentarSenha() {
+      if (input.value === SENHA) {
+        sessionStorage.setItem('auth_req', '1');
+        document.getElementById('senha-screen').classList.add('hidden');
+        document.getElementById('app').classList.add('visible');
+        initApp();
+      } else {
+        erro.textContent = 'Senha incorreta.';
+        input.classList.add('error');
+        input.value = '';
+        setTimeout(() => input.classList.remove('error'), 400);
+        input.focus();
+      }
+    }
+    btn.addEventListener('click', tentarSenha);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') tentarSenha(); });
+  } else {
+    initApp();
+  }
+
+  function initApp() {
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+
+    // Estado local do formulário
+    let selectedLat = null, selectedLng = null, selectedEndereco = '';
+    let linkInput = '';
+    let mapMarker = null;
+
+    // Mapa
+    const map = L.map('mapa-req').setView([-21.762, -43.350], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+
+    function setMarker(lat, lng) {
+      if (mapMarker) map.removeLayer(mapMarker);
+      mapMarker = L.marker([lat, lng]).addTo(map);
+      map.setView([lat, lng], 16);
+      selectedLat = lat;
+      selectedLng = lng;
+    }
+
+    async function reverseGeocode(lat, lng) {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=pt`, { headers: { 'Accept-Language': 'pt' } });
+        const d = await r.json();
+        const addr = d.address;
+        const partes = [
+          addr.road || addr.pedestrian || '',
+          addr.house_number || '',
+          addr.suburb || addr.neighbourhood || addr.quarter || '',
+          'Juiz de Fora'
+        ].filter(Boolean);
+        return partes.join(', ');
+      } catch { return ''; }
+    }
+
+    async function forwardGeocode(query) {
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Juiz de Fora, MG')}&format=json&limit=1&countrycodes=br`);
+        const d = await r.json();
+        if (d.length > 0) return { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon), display: d[0].display_name };
+        return null;
+      } catch { return null; }
+    }
+
+    function parseGoogleMapsUrl(url) {
+      // /@lat,lng,zoom
+      let m = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+      // !3dlat!4dlng
+      m = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
+      if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+      // ?q=lat,lng
+      m = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
+      return null;
+    }
+
+    function updateConfirmacao() {
+      const box = document.getElementById('confirmacao-box');
+      if (!selectedLat || !selectedEndereco) {
+        box.innerHTML = '<div class="confirmacao-vazia">Nenhum ponto selecionado ainda.</div>';
+        document.getElementById('btn-enviar').disabled = true;
+        return;
+      }
+      box.innerHTML = `
+        <div class="confirmacao-label">Endereço</div>
+        <div class="confirmacao-endereco">${selectedEndereco}</div>
+        <div class="confirmacao-coords">Lat: ${selectedLat.toFixed(6)}  Lng: ${selectedLng.toFixed(6)}</div>
+      `;
+      document.getElementById('btn-enviar').disabled = false;
+    }
+
+    // Clique no mapa → reverse geocode
+    map.on('click', async e => {
+      const { lat, lng } = e.latlng;
+      setMarker(lat, lng);
+      document.getElementById('endereco-input').value = 'Buscando endereço...';
+      const endereco = await reverseGeocode(lat, lng);
+      selectedEndereco = endereco || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      document.getElementById('endereco-input').value = selectedEndereco;
+      updateConfirmacao();
+    });
+
+    // Buscar endereço no mapa
+    document.getElementById('btn-buscar').addEventListener('click', async () => {
+      const q = document.getElementById('endereco-input').value.trim();
+      if (!q) return;
+      const result = await forwardGeocode(q);
+      if (result) {
+        setMarker(result.lat, result.lng);
+        selectedEndereco = document.getElementById('endereco-input').value;
+        updateConfirmacao();
+      } else {
+        document.getElementById('link-status').textContent = 'Endereço não encontrado.';
+        document.getElementById('link-status').style.color = '#e63946';
+      }
+    });
+
+    document.getElementById('endereco-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('btn-buscar').click();
+    });
+
+    // Checar link Google Maps
+    document.getElementById('btn-checar').addEventListener('click', async () => {
+      const url = document.getElementById('link-input').value.trim();
+      const statusEl = document.getElementById('link-status');
+      if (!url) return;
+      linkInput = url;
+
+      const coords = parseGoogleMapsUrl(url);
+      if (coords) {
+        setMarker(coords.lat, coords.lng);
+        statusEl.style.color = '#4caf50';
+        statusEl.textContent = 'Localização encontrada no link.';
+        const endereco = await reverseGeocode(coords.lat, coords.lng);
+        selectedEndereco = endereco || `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`;
+        document.getElementById('endereco-input').value = selectedEndereco;
+        updateConfirmacao();
+      } else {
+        statusEl.style.color = '#ffa726';
+        statusEl.textContent = 'Coordenadas não encontradas nesta URL. Use a URL completa da barra do navegador (não o link curto).';
+      }
+    });
+
+    // Enviar
+    document.getElementById('btn-enviar').addEventListener('click', async () => {
+      if (!selectedLat || !selectedEndereco) return;
+
+      const btnEnviar = document.getElementById('btn-enviar');
+      const statusEl  = document.getElementById('status-envio');
+      btnEnviar.disabled = true;
+      statusEl.textContent = 'Enviando...';
+      statusEl.className = '';
+
+      try {
+        const metaSnap = await get(ref(db, 'meta'));
+        const meta = metaSnap.val() || {};
+        const proximoNum = meta.proximo_num || 18;
+        const novoId = `p${String(proximoNum).padStart(2,'0')}`;
+
+        // Extrai rua e bairro do endereço
+        const partes = selectedEndereco.split(',').map(s => s.trim());
+        const rua    = partes[0] || selectedEndereco;
+        const bairro = partes[2] || partes[1] || '';
+
+        const updates = {};
+        updates[`config/${novoId}`] = {
+          num: proximoNum,
+          rua,
+          bairro,
+          lat: selectedLat,
+          lng: selectedLng,
+          link: linkInput || ''
+        };
+        updates[`pontos/${novoId}`] = { indo: false, feito: false, drive: false, responsavel: '' };
+        updates['meta/proximo_num'] = proximoNum + 1;
+        updates['meta/total_requisitados'] = (meta.total_requisitados || 0) + 1;
+
+        await update(ref(db, '/'), updates);
+
+        statusEl.textContent = `✓ Ponto ${String(proximoNum).padStart(2,'0')} enviado com sucesso!`;
+        statusEl.className = 'ok';
+
+        // Limpa formulário
+        document.getElementById('link-input').value = '';
+        document.getElementById('endereco-input').value = '';
+        document.getElementById('link-status').textContent = '';
+        if (mapMarker) { map.removeLayer(mapMarker); mapMarker = null; }
+        selectedLat = null; selectedLng = null; selectedEndereco = ''; linkInput = '';
+        updateConfirmacao();
+
+      } catch (e) {
+        statusEl.textContent = 'Erro ao enviar. Tente novamente.';
+        statusEl.className = 'erro';
+        btnEnviar.disabled = false;
+      }
+    });
+  }
+</script>
+</body>
+</html>
