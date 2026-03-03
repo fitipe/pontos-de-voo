@@ -330,6 +330,30 @@
     /* Linha sem maps btn: checkboxes ocupam tudo */
     .actions-top.no-map .checkboxes { flex: 1; }
 
+    .drive-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1.5px solid #252b3b;
+      background: transparent;
+      color: #8892a4;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .drive-btn:not(.active):hover { border-color: #34a853; color: #34a853; }
+    .drive-btn.active {
+      border-color: #34a853;
+      background: #0f2a1a;
+      color: #34a853;
+    }
+
     .responsavel-area {
       display: flex;
       flex-direction: column;
@@ -581,6 +605,9 @@
               <button class="check-btn feito-btn" data-id="${ponto.id}" data-field="feito">✅ Feito</button>
             </div>
           </div>
+          <button class="drive-btn" data-id="${ponto.id}" data-field="drive">
+            📁 Arquivos enviados para o Drive
+          </button>
           <div class="responsavel-area">
             <div class="responsavel-label">Piloto(s) responsável</div>
             <div class="responsavel-display" id="display-${ponto.id}"></div>
@@ -595,7 +622,7 @@
       container.appendChild(card);
     });
 
-    document.querySelectorAll('.check-btn').forEach(btn => {
+    document.querySelectorAll('.check-btn, .drive-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.dataset.id;
         const field = btn.dataset.field;
@@ -646,6 +673,7 @@
 
         document.querySelector(`.indo-btn[data-id="${ponto.id}"]`).classList.toggle('active', indo);
         document.querySelector(`.feito-btn[data-id="${ponto.id}"]`).classList.toggle('active', feito);
+        document.querySelector(`.drive-btn[data-id="${ponto.id}"]`).classList.toggle('active', !!state.drive);
         document.getElementById(`display-${ponto.id}`).textContent = state.responsavel || '';
 
         updateCardStatus(ponto.id);
