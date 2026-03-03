@@ -295,13 +295,6 @@
 
     document.getElementById('header-nome').textContent = nomeOficial;
 
-    // IDs submetidos nesta sessão
-    let minhasIds = JSON.parse(sessionStorage.getItem('minhas_ids') || '[]');
-
-    function salvarMinhasIds() {
-      sessionStorage.setItem('minhas_ids', JSON.stringify(minhasIds));
-    }
-
     // ── TABS ──
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -537,9 +530,7 @@
 
         await update(ref(db, '/'), updates);
 
-        minhasIds.push(novoId);
-        salvarMinhasIds();
-        document.getElementById('tab-minhas-btn').textContent = `Minhas Solicitações (${minhasIds.length})`;
+        document.getElementById('tab-minhas-btn').textContent = 'Minhas Solicitações';
 
         statusEl.textContent = `✓ Solicitação ${String(proximoNum).padStart(2,'0')} enviada!`;
         statusEl.className = 'ok';
@@ -565,25 +556,20 @@
     }
 
     // ── MINHAS SOLICITAÇÕES ──
-    document.getElementById('tab-minhas-btn').textContent = `Minhas Solicitações${minhasIds.length ? ` (${minhasIds.length})` : ''}`;
 
     async function renderMinhas() {
       const lista = document.getElementById('minhas-lista');
       lista.innerHTML = '<div class="conf-vazia" style="padding:32px 0">Carregando...</div>';
 
-      if (minhasIds.length === 0) {
-        lista.innerHTML = '<div class="sol-vazio" style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação feita nesta sessão.</div>';
-        return;
-      }
+      const snap = await get(ref(db, 'config'));
+      const all  = snap.val() || {};
+      const cards = Object.entries(all)
+        .filter(([, d]) => d.criado_por === nomeOficial)
+        .map(([id, d]) => ({ id, ...d }))
+        .sort((a, b) => a.num - b.num);
 
-      const cards = [];
-      for (const id of minhasIds) {
-        const snap = await get(ref(db, `config/${id}`));
-        if (snap.exists()) {
-          const d = snap.val();
-          cards.push({ id, ...d });
-        }
-      }
+      const tabBtn = document.getElementById('tab-minhas-btn');
+      tabBtn.textContent = cards.length > 0 ? `Minhas Solicitações (${cards.length})` : 'Minhas Solicitações';
 
       if (cards.length === 0) {
         lista.innerHTML = '<div style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação encontrada.</div>';
@@ -633,14 +619,7 @@
 
         await update(ref(db, '/'), updates);
 
-        minhasIds = minhasIds.filter(i => i !== id);
-        salvarMinhasIds();
-        document.getElementById('tab-minhas-btn').textContent = `Minhas Solicitações${minhasIds.length ? ` (${minhasIds.length})` : ''}`;
-        document.getElementById(`sol-${id}`)?.remove();
-
-        if (minhasIds.length === 0) {
-          document.getElementById('minhas-lista').innerHTML = '<div style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação nesta sessão.</div>';
-        }
+        renderMinhas();
       } catch {
         alert('Erro ao cancelar. Tente novamente.');
       }
