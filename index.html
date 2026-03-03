@@ -564,9 +564,7 @@
       document.getElementById('feito-count').textContent = `${totalHistorico + driveCount}/${totalRequisitados}`;
 
       const tabArquivo = document.getElementById('tab-arquivo-btn');
-      tabArquivo.textContent = arquivoCount > 0
-        ? `Pontos já Sobrevoados & Registros Enviados ao Drive (${arquivoCount})`
-        : 'Pontos já Sobrevoados & Registros Enviados ao Drive';
+      tabArquivo.textContent = 'Pontos já Sobrevoados & Registros Enviados ao Drive';
 
     }, () => {
       document.getElementById('loading-overlay').classList.add('hidden');
