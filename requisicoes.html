@@ -430,8 +430,13 @@
       document.getElementById('img-input').click();
     });
 
+    const MAX_IMGS = 7;
+
     document.getElementById('img-input').addEventListener('change', async e => {
-      const files = Array.from(e.target.files);
+      const atual = imagensBase64.filter(Boolean).length;
+      const restam = MAX_IMGS - atual;
+      if (restam <= 0) { e.target.value = ''; return; }
+      const files = Array.from(e.target.files).slice(0, restam);
       for (const file of files) {
         const b64 = await resizeImagem(file, 800, 0.72);
         const idx = imagensBase64.length;
@@ -480,8 +485,18 @@
 
     function atualizarUploadLabel() {
       const count = imagensBase64.filter(Boolean).length;
-      document.getElementById('upload-label').textContent = count > 0 ? '+ Adicionar mais imagens' : '+ Adicionar imagens de referência';
-      document.getElementById('upload-label').style.display = count > 0 ? 'none' : '';
+      const label = document.getElementById('upload-label');
+      const area  = document.getElementById('upload-area');
+      if (count >= MAX_IMGS) {
+        label.textContent = 'Limite de 7 imagens atingido';
+        area.style.cursor = 'default';
+      } else if (count > 0) {
+        label.textContent = `+ Adicionar mais (${count}/${MAX_IMGS})`;
+        area.style.cursor = 'pointer';
+      } else {
+        label.textContent = '+ Adicionar imagens de referência (máx. 7)';
+        area.style.cursor = 'pointer';
+      }
     }
 
     // ── ENVIAR ──
