@@ -183,7 +183,7 @@
       padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 20px;
     }
 
     .summary-bar {
@@ -263,26 +263,19 @@
       gap: 10px;
     }
 
-    /* Maps + checkboxes na mesma linha */
-    .actions-top {
+    .maps-btn {
       display: flex;
       align-items: center;
-      gap: 8px;
-    }
-
-    .maps-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
       background: #1e3a5f;
       color: #60a5fa;
       text-decoration: none;
       font-size: 12px;
       font-weight: 600;
-      padding: 7px 11px;
+      padding: 7px 10px;
       border-radius: 6px;
-      white-space: nowrap;
-      flex-shrink: 0;
       transition: background 0.15s;
     }
     .maps-btn:hover { background: #264b7a; }
@@ -290,7 +283,6 @@
     .checkboxes {
       display: flex;
       gap: 6px;
-      flex: 1;
     }
 
     .check-btn {
@@ -327,10 +319,7 @@
       color: #4caf50;
     }
 
-    /* Linha sem maps btn: checkboxes ocupam tudo */
-    .actions-top.no-map .checkboxes { flex: 1; }
-
-    .drive-btn {
+.drive-btn {
       width: 100%;
       display: flex;
       align-items: center;
@@ -585,7 +574,7 @@
       card.id = `card-${ponto.id}`;
 
       const mapsHtml = ponto.link
-        ? `<a class="maps-btn" href="${ponto.link}" target="_blank">📍 Maps</a>`
+        ? `<a class="maps-btn" href="${ponto.link}" target="_blank">📍 Ver no Maps</a>`
         : '';
 
       card.innerHTML = `
@@ -596,14 +585,11 @@
             ${ponto.bairro ? `<div class="bairro">${ponto.bairro}</div>` : ''}
           </div>
         </div>
-        ${ponto.obs ? `<div class="card-obs">${ponto.obs}</div>` : ''}
         <div class="card-actions">
-          <div class="actions-top${ponto.link ? '' : ' no-map'}">
-            ${mapsHtml}
-            <div class="checkboxes">
-              <button class="check-btn indo-btn" data-id="${ponto.id}" data-field="indo">✈️ Indo fazer</button>
-              <button class="check-btn feito-btn" data-id="${ponto.id}" data-field="feito">✅ Feito</button>
-            </div>
+          ${mapsHtml}
+          <div class="checkboxes">
+            <button class="check-btn indo-btn" data-id="${ponto.id}" data-field="indo">✈️ Indo fazer</button>
+            <button class="check-btn feito-btn" data-id="${ponto.id}" data-field="feito">✅ Feito</button>
           </div>
           <button class="drive-btn" data-id="${ponto.id}" data-field="drive">
             📁 Arquivos enviados para o Drive
