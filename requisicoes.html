@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Requisição de Voo</title>
+  <title>Solicitação de Vôo</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -19,8 +19,10 @@
     .senha-divider { height: 2px; background: #e63946; border-radius: 2px; }
     .senha-field { display: flex; flex-direction: column; gap: 8px; }
     .senha-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #636b7d; }
-    #senha-input { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 8px; padding: 12px 14px; font-size: 16px; color: #e8eaf0; letter-spacing: 3px; outline: none; width: 100%; }
-    #senha-input.error { border-color: #e63946; animation: shake 0.3s; }
+    .senha-field input { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 8px; padding: 12px 14px; font-size: 14px; color: #e8eaf0; outline: none; width: 100%; transition: border-color 0.15s; }
+    .senha-field input:focus { border-color: #4a5568; }
+    #senha-input { letter-spacing: 3px; font-size: 16px; }
+    .senha-field input.error { border-color: #e63946; animation: shake 0.3s; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
     #senha-error { font-size: 12px; color: #e63946; min-height: 16px; text-align: center; }
     #senha-btn { background: #e63946; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; transition: background 0.15s; }
@@ -30,66 +32,88 @@
     #app { display: none; }
     #app.visible { display: block; }
 
-    header { background: #1a1f2e; border-bottom: 2px solid #e63946; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+    header { background: #1a1f2e; border-bottom: 2px solid #e63946; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 2000; }
     header h1 { font-size: 15px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.3; }
     header h1 span { display: block; font-size: 11px; color: #8892a4; font-weight: 400; text-transform: none; letter-spacing: 0; }
-    .header-link { font-size: 12px; color: #60a5fa; text-decoration: none; }
+    .header-link { font-size: 12px; color: #60a5fa; text-decoration: none; white-space: nowrap; }
     .header-link:hover { text-decoration: underline; }
+
+    /* TABS */
+    .tabs { display: flex; border-bottom: 1px solid #252b3b; background: #1a1f2e; }
+    .tab-btn { padding: 12px 20px; font-size: 13px; font-weight: 600; color: #636b7d; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+    .tab-btn.active { color: #e8eaf0; border-bottom-color: #e63946; }
+    .tab-btn:hover:not(.active) { color: #8892a4; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
 
     .container { max-width: 720px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
     .section { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
     .section-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #636b7d; }
-
     .field-row { display: flex; gap: 8px; }
     .field-row input { flex: 1; }
 
-    input[type="text"], textarea {
-      background: #0f1117; border: 1px solid #252b3b; border-radius: 6px;
-      padding: 9px 12px; font-size: 13px; color: #e8eaf0; outline: none;
-      width: 100%; transition: border-color 0.15s;
-    }
-    input[type="text"]:focus, textarea:focus { border-color: #4a5568; }
-    input[type="text"]::placeholder, textarea::placeholder { color: #3a4052; }
+    input[type="text"] { background: #0f1117; border: 1px solid #252b3b; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #e8eaf0; outline: none; width: 100%; transition: border-color 0.15s; }
+    input[type="text"]:focus { border-color: #4a5568; }
+    input[type="text"]::placeholder { color: #3a4052; }
 
-    .btn {
-      border: none; border-radius: 6px; font-size: 12px; font-weight: 700;
-      padding: 9px 16px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
-    }
+    .btn { border: none; border-radius: 6px; font-size: 12px; font-weight: 700; padding: 9px 16px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
     .btn-secondary { background: #252b3b; color: #8892a4; }
     .btn-secondary:hover { background: #2f3850; color: #e8eaf0; }
-    .btn-primary { background: #e63946; color: #fff; }
+    .btn-primary { background: #e63946; color: #fff; font-size: 14px; padding: 12px 20px; }
     .btn-primary:hover { background: #c62d38; }
     .btn-primary:disabled { background: #3a2a2b; color: #636b7d; cursor: not-allowed; }
+    .btn-danger { background: #3a1a1a; color: #e63946; border: 1px solid #e63946; }
+    .btn-danger:hover { background: #e63946; color: #fff; }
 
     #mapa-req { height: 360px; border-radius: 6px; overflow: hidden; }
 
-    .confirmacao {
-      background: #0f1117; border: 1px solid #252b3b; border-radius: 6px;
-      padding: 12px; display: flex; flex-direction: column; gap: 6px;
-    }
-    .confirmacao-label { font-size: 11px; color: #636b7d; text-transform: uppercase; letter-spacing: 0.5px; }
-    .confirmacao-endereco { font-size: 14px; font-weight: 600; color: #e8eaf0; }
-    .confirmacao-coords { font-size: 11px; color: #8892a4; font-family: monospace; }
-    .confirmacao-vazia { font-size: 13px; color: #3a4052; }
+    .confirmacao-box { background: #0f1117; border: 1px solid #252b3b; border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .conf-label { font-size: 11px; color: #636b7d; text-transform: uppercase; letter-spacing: 0.5px; }
+    .conf-endereco { font-size: 14px; font-weight: 600; color: #e8eaf0; }
+    .conf-coords { font-size: 11px; color: #8892a4; font-family: monospace; }
+    .conf-vazia { font-size: 13px; color: #3a4052; }
 
     #status-envio { font-size: 13px; text-align: center; min-height: 20px; }
     #status-envio.ok { color: #4caf50; }
     #status-envio.erro { color: #e63946; }
 
     .hint { font-size: 11px; color: #636b7d; line-height: 1.5; }
-    .hint a { color: #60a5fa; }
+
+    /* MINHAS SOLICITAÇÕES */
+    .sol-card { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .sol-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .sol-num { background: #252b3b; color: #8892a4; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 3px 7px; flex-shrink: 0; }
+    .sol-info { flex: 1; }
+    .sol-rua { font-size: 14px; font-weight: 600; color: #e8eaf0; }
+    .sol-bairro { font-size: 12px; color: #8892a4; margin-top: 2px; }
+    .sol-vazio { font-size: 13px; color: #3a4052; text-align: center; padding: 24px 0; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9998; padding: 24px; }
+    .modal-overlay.hidden { display: none; }
+    .modal-box { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 14px; padding: 28px 28px 24px; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 20px; }
+    .modal-title { font-size: 15px; font-weight: 700; color: #e8eaf0; text-align: center; }
+    .modal-body { font-size: 13px; color: #8892a4; text-align: center; line-height: 1.6; }
+    .modal-body strong { color: #e8eaf0; }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btns button { flex: 1; padding: 12px; }
   </style>
 </head>
 <body>
 
+<!-- TELA DE SENHA + NOME -->
 <div id="senha-screen">
   <div class="senha-card">
     <div class="senha-title">
-      <h1>Requisição de Voo</h1>
+      <h1>Solicitação de Vôo</h1>
       <p>Acesso restrito — Defesa Civil</p>
     </div>
     <div class="senha-divider"></div>
+    <div class="senha-field">
+      <label>Seu nome</label>
+      <input id="nome-input" type="text" placeholder="Nome do oficial">
+    </div>
     <div class="senha-field">
       <label>Senha</label>
       <input id="senha-input" type="password" autocomplete="off" placeholder="••••••••">
@@ -99,60 +123,82 @@
   </div>
 </div>
 
+<!-- MODAL DE CONFIRMAÇÃO -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-btns">
+      <button class="btn btn-secondary" id="modal-nao">Não</button>
+      <button class="btn btn-primary" id="modal-sim">Sim</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
 <div id="app">
   <header>
-    <h1>Requisição de Voo <span>Defesa Civil JF</span></h1>
+    <h1>Solicitação de Vôo <span id="header-nome">Defesa Civil JF</span></h1>
     <a class="header-link" href="index.html">← Ver página de pilotos</a>
   </header>
 
-  <div class="container">
-
-    <!-- Link Google Maps -->
-    <div class="section">
-      <div class="section-label">Link do Google Maps (opcional)</div>
-      <div class="field-row">
-        <input type="text" id="link-input" placeholder="Cole a URL completa do Google Maps...">
-        <button class="btn btn-secondary" id="btn-checar">Checar Link</button>
-      </div>
-      <div class="hint">
-        Cole a URL completa da barra do navegador (ex: google.com/maps/place/.../@-21.79,-43.34,...).
-        Para links curtos (maps.app.goo.gl), abra o link primeiro e copie a URL completa.
-      </div>
-      <div id="link-status" style="font-size:12px; min-height:16px;"></div>
-    </div>
-
-    <!-- Endereço -->
-    <div class="section">
-      <div class="section-label">Endereço</div>
-      <div class="field-row">
-        <input type="text" id="endereco-input" placeholder="Rua, número — Bairro, Juiz de Fora">
-        <button class="btn btn-secondary" id="btn-buscar">Buscar no Mapa</button>
-      </div>
-      <div class="hint">Digite o endereço e clique em "Buscar no Mapa" — ou clique diretamente no mapa para preencher o endereço automaticamente.</div>
-      <div id="mapa-req"></div>
-    </div>
-
-    <!-- Confirmação -->
-    <div class="section">
-      <div class="section-label">Confirmação</div>
-      <div class="confirmacao" id="confirmacao-box">
-        <div class="confirmacao-vazia">Nenhum ponto selecionado ainda.</div>
-      </div>
-    </div>
-
-    <!-- Enviar -->
-    <div class="section" style="gap:12px;">
-      <div id="status-envio"></div>
-      <button class="btn btn-primary" id="btn-enviar" disabled>Enviar Requisição</button>
-    </div>
-
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="nova">Nova Solicitação</button>
+    <button class="tab-btn" data-tab="minhas" id="tab-minhas-btn">Minhas Solicitações</button>
   </div>
+
+  <!-- NOVA SOLICITAÇÃO -->
+  <div class="tab-panel active" id="tab-nova">
+    <div class="container">
+
+      <div class="section">
+        <div class="section-label">Link do Google Maps (opcional)</div>
+        <div class="field-row">
+          <input type="text" id="link-input" placeholder="Cole o link do Google Maps...">
+          <button class="btn btn-secondary" id="btn-checar">Checar Link</button>
+        </div>
+        <div class="hint">Funciona com links curtos (maps.app.goo.gl) e URLs completas.</div>
+        <div id="link-status" style="font-size:12px; min-height:16px;"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Endereço</div>
+        <div class="field-row">
+          <input type="text" id="endereco-input" placeholder="Rua, número — Bairro, Juiz de Fora">
+          <button class="btn btn-secondary" id="btn-buscar">Buscar no Mapa</button>
+        </div>
+        <div class="hint">Digite o endereço e clique em "Buscar no Mapa" — ou clique diretamente no mapa.</div>
+        <div id="mapa-req"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">Confirmação</div>
+        <div class="confirmacao-box" id="confirmacao-box">
+          <div class="conf-vazia">Nenhum ponto selecionado ainda.</div>
+        </div>
+      </div>
+
+      <div class="section" style="gap:12px;">
+        <div id="status-envio"></div>
+        <button class="btn btn-primary" id="btn-enviar" disabled>Enviar Solicitação</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MINHAS SOLICITAÇÕES -->
+  <div class="tab-panel" id="tab-minhas">
+    <div class="container">
+      <div id="minhas-lista"></div>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  import { getDatabase, ref, get, update, remove } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
@@ -166,36 +212,61 @@
 
   const SENHA = "pedirvoos";
 
-  // Auth
-  function checkSenha() {
-    if (sessionStorage.getItem('auth_req') === '1') {
-      document.getElementById('senha-screen').classList.add('hidden');
-      document.getElementById('app').classList.add('visible');
-      return true;
-    }
-    return false;
+  // ── MODAL ──
+  function showModal(title, body, onSim) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = body;
+    document.getElementById('modal').classList.remove('hidden');
+    const btnSim = document.getElementById('modal-sim');
+    const btnNao = document.getElementById('modal-nao');
+    const close = () => document.getElementById('modal').classList.add('hidden');
+    btnNao.onclick = close;
+    btnSim.onclick = () => { close(); onSim(); };
   }
 
-  if (!checkSenha()) {
-    const input = document.getElementById('senha-input');
-    const btn   = document.getElementById('senha-btn');
-    const erro  = document.getElementById('senha-error');
-    function tentarSenha() {
-      if (input.value === SENHA) {
-        sessionStorage.setItem('auth_req', '1');
-        document.getElementById('senha-screen').classList.add('hidden');
-        document.getElementById('app').classList.add('visible');
-        initApp();
-      } else {
-        erro.textContent = 'Senha incorreta.';
-        input.classList.add('error');
-        input.value = '';
-        setTimeout(() => input.classList.remove('error'), 400);
-        input.focus();
-      }
+  // ── AUTH ──
+  function checkAuth() {
+    const auth = sessionStorage.getItem('auth_req');
+    const nome = sessionStorage.getItem('nome_oficial');
+    if (auth === '1' && nome) {
+      document.getElementById('senha-screen').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      return nome;
     }
-    btn.addEventListener('click', tentarSenha);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') tentarSenha(); });
+    return null;
+  }
+
+  let nomeOficial = checkAuth();
+
+  if (!nomeOficial) {
+    const senhaInput = document.getElementById('senha-input');
+    const nomeInput  = document.getElementById('nome-input');
+    const btn        = document.getElementById('senha-btn');
+    const erro       = document.getElementById('senha-error');
+
+    function tentarEntrar() {
+      const nome  = nomeInput.value.trim();
+      const senha = senhaInput.value;
+      if (!nome) { nomeInput.classList.add('error'); setTimeout(() => nomeInput.classList.remove('error'), 400); return; }
+      if (senha !== SENHA) {
+        erro.textContent = 'Senha incorreta.';
+        senhaInput.classList.add('error');
+        senhaInput.value = '';
+        setTimeout(() => senhaInput.classList.remove('error'), 400);
+        senhaInput.focus();
+        return;
+      }
+      sessionStorage.setItem('auth_req', '1');
+      sessionStorage.setItem('nome_oficial', nome);
+      nomeOficial = nome;
+      document.getElementById('senha-screen').classList.add('hidden');
+      document.getElementById('app').classList.add('visible');
+      initApp();
+    }
+
+    btn.addEventListener('click', tentarEntrar);
+    senhaInput.addEventListener('keydown', e => { if (e.key === 'Enter') tentarEntrar(); });
+    nomeInput.addEventListener('keydown', e => { if (e.key === 'Enter') senhaInput.focus(); });
   } else {
     initApp();
   }
@@ -204,12 +275,30 @@
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
 
-    // Estado local do formulário
-    let selectedLat = null, selectedLng = null, selectedEndereco = '';
-    let linkInput = '';
+    document.getElementById('header-nome').textContent = nomeOficial;
+
+    // IDs submetidos nesta sessão
+    let minhasIds = JSON.parse(sessionStorage.getItem('minhas_ids') || '[]');
+
+    function salvarMinhasIds() {
+      sessionStorage.setItem('minhas_ids', JSON.stringify(minhasIds));
+    }
+
+    // ── TABS ──
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+        if (btn.dataset.tab === 'minhas') renderMinhas();
+      });
+    });
+
+    // ── MAPA ──
+    let selectedLat = null, selectedLng = null, selectedEndereco = '', linkSelecionado = '';
     let mapMarker = null;
 
-    // Mapa
     const map = L.map('mapa-req').setView([-21.762, -43.350], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
 
@@ -217,42 +306,32 @@
       if (mapMarker) map.removeLayer(mapMarker);
       mapMarker = L.marker([lat, lng]).addTo(map);
       map.setView([lat, lng], 16);
-      selectedLat = lat;
-      selectedLng = lng;
+      selectedLat = lat; selectedLng = lng;
     }
 
     async function reverseGeocode(lat, lng) {
       try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=pt`, { headers: { 'Accept-Language': 'pt' } });
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`, { headers: { 'Accept-Language': 'pt' } });
         const d = await r.json();
-        const addr = d.address;
-        const partes = [
-          addr.road || addr.pedestrian || '',
-          addr.house_number || '',
-          addr.suburb || addr.neighbourhood || addr.quarter || '',
-          'Juiz de Fora'
-        ].filter(Boolean);
-        return partes.join(', ');
+        const a = d.address;
+        return [a.road || a.pedestrian || '', a.house_number || '', a.suburb || a.neighbourhood || a.quarter || '', 'Juiz de Fora'].filter(Boolean).join(', ');
       } catch { return ''; }
     }
 
-    async function forwardGeocode(query) {
+    async function forwardGeocode(q) {
       try {
-        const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Juiz de Fora, MG')}&format=json&limit=1&countrycodes=br`);
+        const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ', Juiz de Fora, MG')}&format=json&limit=1&countrycodes=br`);
         const d = await r.json();
-        if (d.length > 0) return { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon), display: d[0].display_name };
+        if (d.length > 0) return { lat: parseFloat(d[0].lat), lng: parseFloat(d[0].lon) };
         return null;
       } catch { return null; }
     }
 
     function parseGoogleMapsUrl(url) {
-      // /@lat,lng,zoom
       let m = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
       if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
-      // !3dlat!4dlng
       m = url.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/);
       if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
-      // ?q=lat,lng
       m = url.match(/[?&]q=(-?\d+\.\d+),(-?\d+\.\d+)/);
       if (m) return { lat: parseFloat(m[1]), lng: parseFloat(m[2]) };
       return null;
@@ -261,77 +340,62 @@
     function updateConfirmacao() {
       const box = document.getElementById('confirmacao-box');
       if (!selectedLat || !selectedEndereco) {
-        box.innerHTML = '<div class="confirmacao-vazia">Nenhum ponto selecionado ainda.</div>';
+        box.innerHTML = '<div class="conf-vazia">Nenhum ponto selecionado ainda.</div>';
         document.getElementById('btn-enviar').disabled = true;
         return;
       }
       box.innerHTML = `
-        <div class="confirmacao-label">Endereço</div>
-        <div class="confirmacao-endereco">${selectedEndereco}</div>
-        <div class="confirmacao-coords">Lat: ${selectedLat.toFixed(6)}  Lng: ${selectedLng.toFixed(6)}</div>
-      `;
+        <div class="conf-label">Endereço confirmado</div>
+        <div class="conf-endereco">${selectedEndereco}</div>
+        <div class="conf-coords">Lat: ${selectedLat.toFixed(6)} · Lng: ${selectedLng.toFixed(6)}</div>`;
       document.getElementById('btn-enviar').disabled = false;
     }
 
-    // Clique no mapa → reverse geocode
     map.on('click', async e => {
       const { lat, lng } = e.latlng;
       setMarker(lat, lng);
       document.getElementById('endereco-input').value = 'Buscando endereço...';
-      const endereco = await reverseGeocode(lat, lng);
-      selectedEndereco = endereco || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      const end = await reverseGeocode(lat, lng);
+      selectedEndereco = end || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
       document.getElementById('endereco-input').value = selectedEndereco;
       updateConfirmacao();
     });
 
-    // Buscar endereço no mapa
     document.getElementById('btn-buscar').addEventListener('click', async () => {
       const q = document.getElementById('endereco-input').value.trim();
       if (!q) return;
-      const result = await forwardGeocode(q);
-      if (result) {
-        setMarker(result.lat, result.lng);
-        selectedEndereco = document.getElementById('endereco-input').value;
-        updateConfirmacao();
-      } else {
-        document.getElementById('link-status').textContent = 'Endereço não encontrado.';
-        document.getElementById('link-status').style.color = '#e63946';
-      }
+      const res = await forwardGeocode(q);
+      if (res) { setMarker(res.lat, res.lng); selectedEndereco = q; updateConfirmacao(); }
+      else { document.getElementById('link-status').textContent = 'Endereço não encontrado.'; document.getElementById('link-status').style.color = '#e63946'; }
     });
 
-    document.getElementById('endereco-input').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('btn-buscar').click();
-    });
+    document.getElementById('endereco-input').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-buscar').click(); });
 
-    // Checar link Google Maps
     document.getElementById('btn-checar').addEventListener('click', async () => {
       const url = document.getElementById('link-input').value.trim();
       const statusEl = document.getElementById('link-status');
       if (!url) return;
-      linkInput = url;
       statusEl.style.color = '#8892a4';
       statusEl.textContent = 'Verificando...';
 
-      // Tenta parsear diretamente primeiro (URL completa)
       let coords = parseGoogleMapsUrl(url);
+      let finalLink = url;
 
-      // Se não encontrou, tenta resolver via proxy (link curto)
       if (!coords) {
         try {
-          const proxyUrl = `https://maps-proxy.fitbritto.workers.dev/?url=${encodeURIComponent(url)}`;
-          const resp = await fetch(proxyUrl);
-          const finalUrl = await resp.text();
-          coords = parseGoogleMapsUrl(finalUrl);
-          if (coords) linkInput = finalUrl;
+          const resp = await fetch(`https://maps-proxy.fitbritto.workers.dev/?url=${encodeURIComponent(url)}`);
+          finalLink = await resp.text();
+          coords = parseGoogleMapsUrl(finalLink);
         } catch { /* proxy falhou */ }
       }
 
       if (coords) {
         setMarker(coords.lat, coords.lng);
+        linkSelecionado = finalLink;
         statusEl.style.color = '#4caf50';
         statusEl.textContent = 'Localização encontrada.';
-        const endereco = await reverseGeocode(coords.lat, coords.lng);
-        selectedEndereco = endereco || `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`;
+        const end = await reverseGeocode(coords.lat, coords.lng);
+        selectedEndereco = end || `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`;
         document.getElementById('endereco-input').value = selectedEndereco;
         updateConfirmacao();
       } else {
@@ -340,10 +404,17 @@
       }
     });
 
-    // Enviar
-    document.getElementById('btn-enviar').addEventListener('click', async () => {
+    // ── ENVIAR ──
+    document.getElementById('btn-enviar').addEventListener('click', () => {
       if (!selectedLat || !selectedEndereco) return;
+      showModal(
+        'Confirmar Solicitação de Vôo?',
+        `<strong>${selectedEndereco}</strong><br><br>Essa solicitação será enviada para a página de pilotos.`,
+        confirmarEnvio
+      );
+    });
 
+    async function confirmarEnvio() {
       const btnEnviar = document.getElementById('btn-enviar');
       const statusEl  = document.getElementById('status-envio');
       btnEnviar.disabled = true;
@@ -355,44 +426,122 @@
         const meta = metaSnap.val() || {};
         const proximoNum = meta.proximo_num || 18;
         const novoId = `p${String(proximoNum).padStart(2,'0')}`;
-
-        // Extrai rua e bairro do endereço
         const partes = selectedEndereco.split(',').map(s => s.trim());
         const rua    = partes[0] || selectedEndereco;
         const bairro = partes[2] || partes[1] || '';
 
         const updates = {};
-        updates[`config/${novoId}`] = {
-          num: proximoNum,
-          rua,
-          bairro,
-          lat: selectedLat,
-          lng: selectedLng,
-          link: linkInput || ''
-        };
+        updates[`config/${novoId}`] = { num: proximoNum, rua, bairro, lat: selectedLat, lng: selectedLng, link: linkSelecionado || '', criado_por: nomeOficial };
         updates[`pontos/${novoId}`] = { indo: false, feito: false, drive: false, responsavel: '' };
         updates['meta/proximo_num'] = proximoNum + 1;
         updates['meta/total_requisitados'] = (meta.total_requisitados || 0) + 1;
 
         await update(ref(db, '/'), updates);
 
-        statusEl.textContent = `✓ Ponto ${String(proximoNum).padStart(2,'0')} enviado com sucesso!`;
+        minhasIds.push(novoId);
+        salvarMinhasIds();
+        document.getElementById('tab-minhas-btn').textContent = `Minhas Solicitações (${minhasIds.length})`;
+
+        statusEl.textContent = `✓ Solicitação ${String(proximoNum).padStart(2,'0')} enviada!`;
         statusEl.className = 'ok';
 
-        // Limpa formulário
+        // Reset form
         document.getElementById('link-input').value = '';
         document.getElementById('endereco-input').value = '';
         document.getElementById('link-status').textContent = '';
         if (mapMarker) { map.removeLayer(mapMarker); mapMarker = null; }
-        selectedLat = null; selectedLng = null; selectedEndereco = ''; linkInput = '';
+        selectedLat = null; selectedLng = null; selectedEndereco = ''; linkSelecionado = '';
         updateConfirmacao();
+        setTimeout(() => { statusEl.textContent = ''; btnEnviar.disabled = false; }, 4000);
 
-      } catch (e) {
+      } catch {
         statusEl.textContent = 'Erro ao enviar. Tente novamente.';
         statusEl.className = 'erro';
         btnEnviar.disabled = false;
       }
-    });
+    }
+
+    // ── MINHAS SOLICITAÇÕES ──
+    document.getElementById('tab-minhas-btn').textContent = `Minhas Solicitações${minhasIds.length ? ` (${minhasIds.length})` : ''}`;
+
+    async function renderMinhas() {
+      const lista = document.getElementById('minhas-lista');
+      lista.innerHTML = '<div class="conf-vazia" style="padding:32px 0">Carregando...</div>';
+
+      if (minhasIds.length === 0) {
+        lista.innerHTML = '<div class="sol-vazio" style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação feita nesta sessão.</div>';
+        return;
+      }
+
+      const cards = [];
+      for (const id of minhasIds) {
+        const snap = await get(ref(db, `config/${id}`));
+        if (snap.exists()) {
+          const d = snap.val();
+          cards.push({ id, ...d });
+        }
+      }
+
+      if (cards.length === 0) {
+        lista.innerHTML = '<div style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação encontrada.</div>';
+        return;
+      }
+
+      lista.innerHTML = '';
+      cards.forEach(sol => {
+        const card = document.createElement('div');
+        card.className = 'sol-card';
+        card.id = `sol-${sol.id}`;
+        card.style.marginBottom = '12px';
+        card.innerHTML = `
+          <div class="sol-header">
+            <div class="sol-num">${String(sol.num).padStart(2,'0')}</div>
+            <div class="sol-info">
+              <div class="sol-rua">${sol.rua}</div>
+              ${sol.bairro ? `<div class="sol-bairro">${sol.bairro}</div>` : ''}
+            </div>
+            <button class="btn btn-danger" data-id="${sol.id}" data-rua="${sol.rua}">Cancelar</button>
+          </div>`;
+        lista.appendChild(card);
+      });
+
+      lista.querySelectorAll('.btn-danger').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id  = btn.dataset.id;
+          const rua = btn.dataset.rua;
+          showModal(
+            'Cancelar solicitação?',
+            `<strong>${rua}</strong><br><br>Isso removerá esta solicitação da página de pilotos permanentemente.`,
+            () => cancelarSolicitacao(id)
+          );
+        });
+      });
+    }
+
+    async function cancelarSolicitacao(id) {
+      try {
+        const metaSnap = await get(ref(db, 'meta'));
+        const meta = metaSnap.val() || {};
+
+        const updates = {};
+        updates[`config/${id}`] = null;
+        updates[`pontos/${id}`] = null;
+        updates['meta/total_requisitados'] = Math.max(0, (meta.total_requisitados || 1) - 1);
+
+        await update(ref(db, '/'), updates);
+
+        minhasIds = minhasIds.filter(i => i !== id);
+        salvarMinhasIds();
+        document.getElementById('tab-minhas-btn').textContent = `Minhas Solicitações${minhasIds.length ? ` (${minhasIds.length})` : ''}`;
+        document.getElementById(`sol-${id}`)?.remove();
+
+        if (minhasIds.length === 0) {
+          document.getElementById('minhas-lista').innerHTML = '<div style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação nesta sessão.</div>';
+        }
+      } catch {
+        alert('Erro ao cancelar. Tente novamente.');
+      }
+    }
   }
 </script>
 </body>
