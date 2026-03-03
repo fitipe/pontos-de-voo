@@ -309,19 +309,34 @@
       const statusEl = document.getElementById('link-status');
       if (!url) return;
       linkInput = url;
+      statusEl.style.color = '#8892a4';
+      statusEl.textContent = 'Verificando...';
 
-      const coords = parseGoogleMapsUrl(url);
+      // Tenta parsear diretamente primeiro (URL completa)
+      let coords = parseGoogleMapsUrl(url);
+
+      // Se não encontrou, tenta resolver via proxy (link curto)
+      if (!coords) {
+        try {
+          const proxyUrl = `https://maps-proxy.fitbritto.workers.dev/?url=${encodeURIComponent(url)}`;
+          const resp = await fetch(proxyUrl);
+          const finalUrl = await resp.text();
+          coords = parseGoogleMapsUrl(finalUrl);
+          if (coords) linkInput = finalUrl;
+        } catch { /* proxy falhou */ }
+      }
+
       if (coords) {
         setMarker(coords.lat, coords.lng);
         statusEl.style.color = '#4caf50';
-        statusEl.textContent = 'Localização encontrada no link.';
+        statusEl.textContent = 'Localização encontrada.';
         const endereco = await reverseGeocode(coords.lat, coords.lng);
         selectedEndereco = endereco || `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`;
         document.getElementById('endereco-input').value = selectedEndereco;
         updateConfirmacao();
       } else {
-        statusEl.style.color = '#ffa726';
-        statusEl.textContent = 'Coordenadas não encontradas nesta URL. Use a URL completa da barra do navegador (não o link curto).';
+        statusEl.style.color = '#e63946';
+        statusEl.textContent = 'Não foi possível encontrar as coordenadas neste link.';
       }
     });
 
