@@ -477,6 +477,37 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getDatabase, ref, onValue, update, get } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
+  // ── FIREBASE CONFIG (deve vir antes da verificação de senha) ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
+    authDomain: "pontos-de-voo.firebaseapp.com",
+    databaseURL: "https://pontos-de-voo-default-rtdb.firebaseio.com",
+    projectId: "pontos-de-voo",
+    storageBucket: "pontos-de-voo.firebasestorage.app",
+    messagingSenderId: "867032863146",
+    appId: "1:867032863146:web:a38094016b457fc1c59bd3"
+  };
+
+  const PONTOS = [
+    { id:"p01", num:"01", rua:"Rua Antônio Espanhol Celeste", bairro:"Jardim Olímpia", obs:"Abranger área da Avenida Santa Luzia no trecho imediatamente à área atingida por deslizamento", link:"https://maps.app.goo.gl/JUJ6aFZ59u9GUFDv9" },
+    { id:"p02", num:"02", rua:"Avenida Otávio Dias Moreira", bairro:"Bom Clima", obs:"Abranger área onde ocorreu escorregamento da margem do Córrego", link:"https://maps.app.goo.gl/GgNYhiKRwHQtVERJ9" },
+    { id:"p03", num:"03", rua:"Rua Rodolfo Euzébio de Carvalho", bairro:"Nossa Sra. Lourdes", obs:"Abranger área onde ocorreu escorregamento de talude e colapso de edificações", link:"https://maps.app.goo.gl/Jym4KbqncuD8M7qV8" },
+    { id:"p04", num:"04", rua:"Rua Luiz Zudio", bairro:"Serro Azul", obs:"Abranger área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/xtvx45US4jrj46Pc9" },
+    { id:"p05", num:"05", rua:"Rua Luiz José Esteves", bairro:"Serro Azul", obs:"Abranger área onde ocorreu escorregamento de talude que danificou infraestrutura da via", link:"https://maps.app.goo.gl/SnGNxf1UeepMVi4i6" },
+    { id:"p06", num:"06", rua:"Rua Ouro Fino", bairro:"Bonfim", obs:"Abranger a área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/xXYECBgHKfsxpKg47" },
+    { id:"p07", num:"07", rua:"Rua Artesão Antônio de Oliveira", bairro:"", obs:"Abranger a área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/f25ipR8ADRbZNNfa8" },
+    { id:"p08", num:"08", rua:"Avenida Luiza Vitória Fernandes", bairro:"Santa Cruz", obs:"Abranger a área onde ocorreu escorregamento de talude às margens do Córrego", link:"https://maps.app.goo.gl/mPgXnadRno2o4Twe9" },
+    { id:"p09", num:"09", rua:"Rua São Pancrácio", bairro:"São Tarcísio", obs:"Caso possível tentar abranger toda a extensão da via — Pontos de escorregamento", link:"https://maps.app.goo.gl/iX5kgzWKKXFUwe5j6" },
+    { id:"p10", num:"10", rua:"Rua Orlando Stephani", bairro:"Ipiranga", obs:"Caso possível tentar abranger toda a extensão do escadão, trecho danificado", link:"https://maps.app.goo.gl/AafmBVTVfT3WS8GEA" },
+    { id:"p11", num:"11", rua:"Rua Antônio Homem da Rocha", bairro:"Teixeiras", obs:"Ponto de escorregamento", link:"https://maps.app.goo.gl/yXrL11DZqHfA1UbEA" },
+    { id:"p12", num:"12", rua:"Rua São Vicente", bairro:"Costa Carvalho", obs:"", link:"https://maps.app.goo.gl/VH7n2xbiFqXCeWXp8" },
+    { id:"p13", num:"13", rua:"Rua Primeira Vitória", bairro:"Santo Antônio", obs:"", link:"https://maps.app.goo.gl/QUAhEqYjzSioxR8WA" },
+    { id:"p14", num:"14", rua:"Rua Coronel Sebastião Halfeld", bairro:"Miguel Marinho", obs:"", link:"" },
+    { id:"p15", num:"15", rua:"Rua Diva Garcia, 3006", bairro:"Linhares", obs:"Escorregamento", link:"https://maps.app.goo.gl/iMmaMb8NkzV8SbwK8" },
+    { id:"p16", num:"16", rua:"Rua Diva Garcia, 1225", bairro:"Bom Jardim", obs:"Escorregamentos de margem fluvial", link:"https://maps.app.goo.gl/mJgXbQSXiFUWRiuJ8" },
+    { id:"p17", num:"17", rua:"Rua Dr. Moacir de Castro Xavier", bairro:"Bom Jardim", obs:"", link:"" }
+  ];
+
   // ── SENHA ──
   const SENHA = "jfdrone";
 
@@ -514,37 +545,6 @@
   } else {
     initFirebase();
   }
-
-  // ── FIREBASE ──
-  const firebaseConfig = {
-    apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
-    authDomain: "pontos-de-voo.firebaseapp.com",
-    databaseURL: "https://pontos-de-voo-default-rtdb.firebaseio.com",
-    projectId: "pontos-de-voo",
-    storageBucket: "pontos-de-voo.firebasestorage.app",
-    messagingSenderId: "867032863146",
-    appId: "1:867032863146:web:a38094016b457fc1c59bd3"
-  };
-
-  const PONTOS = [
-    { id:"p01", num:"01", rua:"Rua Antônio Espanhol Celeste", bairro:"Jardim Olímpia", obs:"Abranger área da Avenida Santa Luzia no trecho imediatamente à área atingida por deslizamento", link:"https://maps.app.goo.gl/JUJ6aFZ59u9GUFDv9" },
-    { id:"p02", num:"02", rua:"Avenida Otávio Dias Moreira", bairro:"Bom Clima", obs:"Abranger área onde ocorreu escorregamento da margem do Córrego", link:"https://maps.app.goo.gl/GgNYhiKRwHQtVERJ9" },
-    { id:"p03", num:"03", rua:"Rua Rodolfo Euzébio de Carvalho", bairro:"Nossa Sra. Lourdes", obs:"Abranger área onde ocorreu escorregamento de talude e colapso de edificações", link:"https://maps.app.goo.gl/Jym4KbqncuD8M7qV8" },
-    { id:"p04", num:"04", rua:"Rua Luiz Zudio", bairro:"Serro Azul", obs:"Abranger área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/xtvx45US4jrj46Pc9" },
-    { id:"p05", num:"05", rua:"Rua Luiz José Esteves", bairro:"Serro Azul", obs:"Abranger área onde ocorreu escorregamento de talude que danificou infraestrutura da via", link:"https://maps.app.goo.gl/SnGNxf1UeepMVi4i6" },
-    { id:"p06", num:"06", rua:"Rua Ouro Fino", bairro:"Bonfim", obs:"Abranger a área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/xXYECBgHKfsxpKg47" },
-    { id:"p07", num:"07", rua:"Rua Artesão Antônio de Oliveira", bairro:"", obs:"Abranger a área onde ocorreu escorregamento de talude que danificou a infraestrutura da via", link:"https://maps.app.goo.gl/f25ipR8ADRbZNNfa8" },
-    { id:"p08", num:"08", rua:"Avenida Luiza Vitória Fernandes", bairro:"Santa Cruz", obs:"Abranger a área onde ocorreu escorregamento de talude às margens do Córrego", link:"https://maps.app.goo.gl/mPgXnadRno2o4Twe9" },
-    { id:"p09", num:"09", rua:"Rua São Pancrácio", bairro:"São Tarcísio", obs:"Caso possível tentar abranger toda a extensão da via — Pontos de escorregamento", link:"https://maps.app.goo.gl/iX5kgzWKKXFUwe5j6" },
-    { id:"p10", num:"10", rua:"Rua Orlando Stephani", bairro:"Ipiranga", obs:"Caso possível tentar abranger toda a extensão do escadão, trecho danificado", link:"https://maps.app.goo.gl/AafmBVTVfT3WS8GEA" },
-    { id:"p11", num:"11", rua:"Rua Antônio Homem da Rocha", bairro:"Teixeiras", obs:"Ponto de escorregamento", link:"https://maps.app.goo.gl/yXrL11DZqHfA1UbEA" },
-    { id:"p12", num:"12", rua:"Rua São Vicente", bairro:"Costa Carvalho", obs:"", link:"https://maps.app.goo.gl/VH7n2xbiFqXCeWXp8" },
-    { id:"p13", num:"13", rua:"Rua Primeira Vitória", bairro:"Santo Antônio", obs:"", link:"https://maps.app.goo.gl/QUAhEqYjzSioxR8WA" },
-    { id:"p14", num:"14", rua:"Rua Coronel Sebastião Halfeld", bairro:"Miguel Marinho", obs:"", link:"" },
-    { id:"p15", num:"15", rua:"Rua Diva Garcia, 3006", bairro:"Linhares", obs:"Escorregamento", link:"https://maps.app.goo.gl/iMmaMb8NkzV8SbwK8" },
-    { id:"p16", num:"16", rua:"Rua Diva Garcia, 1225", bairro:"Bom Jardim", obs:"Escorregamentos de margem fluvial", link:"https://maps.app.goo.gl/mJgXbQSXiFUWRiuJ8" },
-    { id:"p17", num:"17", rua:"Rua Dr. Moacir de Castro Xavier", bairro:"Bom Jardim", obs:"", link:"" }
-  ];
 
   function initFirebase() {
     const app = initializeApp(firebaseConfig);
