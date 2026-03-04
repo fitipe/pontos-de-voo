@@ -448,7 +448,7 @@
           <div class="card-title">
             <h2>${ponto.rua}</h2>
             ${ponto.bairro ? `<div class="bairro">${ponto.bairro}</div>` : ''}
-            ${ponto.criado_por ? `<div class="bairro">Solicitante: ${ponto.criado_por}</div>` : ''}
+            ${ponto.criado_por ? `<div class="bairro">Solicitado por: ${ponto.criado_por}</div>` : ''}
           </div>
         </div>
         ${(ponto.link || (ponto.lat && ponto.lng)) ? `<div class="card-maps"><a class="maps-btn" href="${ponto.link || `https://maps.google.com/?q=${ponto.lat},${ponto.lng}`}" target="_blank">📍 Ver no Maps</a></div>` : ''}
