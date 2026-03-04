@@ -504,6 +504,7 @@
     const db  = getDatabase(app);
     let unsubMinhas = null, unsubTodas = null;
     let mapTodas = null, mapMinhas = null;
+    let todasInitialized = false;
     const markersTodas  = {}; // { id: { marker, status } }
     const markersMinhas = {};
 
@@ -773,6 +774,7 @@
 
     // ── TODAS AS SOLICITAÇÕES ──
     async function renderTodas() {
+      todasInitialized = true;
       if (unsubTodas) { unsubTodas(); unsubTodas = null; }
 
       const lista = document.getElementById('todas-lista');
@@ -965,6 +967,7 @@
           'meta/proximo_num': novoProximoNum
         });
         renderMinhas();
+        if (todasInitialized) renderTodas();
       } catch {
         alert('Erro ao cancelar. Tente novamente.');
       }
