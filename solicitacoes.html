@@ -443,7 +443,7 @@
           ${item.bairro ? `<div class="bairro">${item.bairro}</div>` : ''}
         </div>
       </div>
-      ${item.link ? `<div class="card-maps"><a class="maps-btn" href="${item.link}" target="_blank">📍 Ver no Maps</a></div>` : ''}
+      ${(item.link || (item.lat && item.lng)) ? `<div class="card-maps"><a class="maps-btn" href="${item.link || `https://maps.google.com/?q=${item.lat},${item.lng}`}" target="_blank">📍 Ver no Maps</a></div>` : ''}
       ${(item.info_adicional || item.imagens?.length) ? `<div class="card-section">
         ${item.info_adicional ? `<div class="card-info-label">Informações Adicionais:</div><div class="card-info">${item.info_adicional}</div>` : ''}
         ${item.imagens?.length ? `<button class="fotos-btn" data-id="${item.id}">🖼 Ver Fotos de Referência (${item.imagens.length})</button>` : ''}
