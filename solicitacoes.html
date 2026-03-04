@@ -115,7 +115,7 @@
     .check-btn.feito-btn.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
     .drive-btn-ro { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: default; pointer-events: none; }
     .drive-btn-ro.active { border-color: #34a853; background: #0f2a1a; color: #34a853; }
-    .piloto-display { font-size: 12px; color: #8892a4; }
+    .piloto-display { font-size: 13px; color: #8892a4; }
     .piloto-display:empty { display: none; }
     .solicitante-label { font-size: 11px; color: #4a5568; }
     .call-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: #0f2a1a; color: #4caf50; text-decoration: none; font-size: 12px; font-weight: 600; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #34a853; transition: background 0.15s; }
@@ -177,7 +177,7 @@
     <div class="senha-divider"></div>
     <div class="senha-field">
       <label>Seu nome</label>
-      <input id="nome-input" type="text" placeholder="Seu nome">
+      <input id="nome-input" type="text" placeholder="Nome">
     </div>
     <div class="senha-field">
       <label>Senha</label>
@@ -467,12 +467,12 @@
     const driveEl = document.getElementById(`${prefix}drive-${id}`);
     if (driveEl) driveEl.classList.toggle('active', !!state.drive);
     const pilotoEl = document.getElementById(`${prefix}piloto-${id}`);
-    if (pilotoEl) pilotoEl.textContent = pilotoDisplay(state);
     const callEl = document.getElementById(`${prefix}call-${id}`);
-    if (callEl) {
-      const tel = pilotoTel(state);
-      callEl.textContent = tel || '';
-      callEl.className = tel ? 'piloto-display' : '';
+    if (callEl) callEl.textContent = '';
+    if (pilotoEl) {
+      const nome = pilotoDisplay(state);
+      const tel  = pilotoTel(state);
+      pilotoEl.textContent = nome && tel ? `${nome} — ${tel}` : nome;
     }
   }
 
