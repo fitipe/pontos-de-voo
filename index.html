@@ -87,12 +87,14 @@
     .card { background: #1a1f2e; border-radius: 10px; overflow: hidden; border: 1px solid #252b3b; transition: border-color 0.2s; }
     .card.status-feito { border-color: #4caf50; }
     .card.status-indo { border-color: #ffa726; }
+    .card.status-faltando { border-color: #e63946; }
     .card.status-arquivado { border-color: #34a853; opacity: 0.85; }
     .card-header { padding: 14px 16px 0; display: flex; align-items: flex-start; gap: 12px; }
     .card-maps { padding: 10px 16px 12px; }
     .point-num { background: #252b3b; color: #8892a4; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 3px 7px; flex-shrink: 0; margin-top: 2px; }
     .card.status-feito .point-num, .card.status-arquivado .point-num { background: #1b3a1f; color: #4caf50; }
     .card.status-indo .point-num { background: #3a2a0a; color: #ffa726; }
+    .card.status-faltando .point-num { background: #3a0a0a; color: #e63946; }
     .card-title { flex: 1; }
     .card-title h2 { font-size: 14px; font-weight: 600; color: #e8eaf0; line-height: 1.3; }
     .card-title .bairro { font-size: 12px; color: #8892a4; margin-top: 2px; }
@@ -539,7 +541,8 @@
           }
           card.classList.toggle('status-feito', feito);
           card.classList.toggle('status-indo', indo && !feito);
-          if (!card.classList.contains('status-feito') && !card.classList.contains('status-indo')) {
+          card.classList.toggle('status-faltando', !indo && !feito);
+          if (!card.classList.contains('status-feito') && !card.classList.contains('status-indo') && !card.classList.contains('status-faltando')) {
             card.className = 'card';
           }
           if (mapaMarkers[ponto.id]) {
