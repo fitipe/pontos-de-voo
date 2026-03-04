@@ -139,8 +139,9 @@
     .desistir-btn:hover { background: #3a2a0a; }
 
     .drive-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
-    .drive-btn:not(.active):hover { border-color: #34a853; color: #34a853; }
+    .drive-btn:not(.active):not(.locked):hover { border-color: #34a853; color: #34a853; }
     .drive-btn.active { border-color: #34a853; background: #0f2a1a; color: #34a853; cursor: default; }
+    .drive-btn.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
     .piloto-display { font-size: 12px; color: #8892a4; padding: 2px 0; min-height: 0; }
 
@@ -576,7 +577,7 @@
     // Botão Drive → confirmação
     document.querySelectorAll('.drive-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (btn.classList.contains('active')) return;
+        if (btn.classList.contains('active') || btn.classList.contains('locked')) return;
         const id   = btn.dataset.id;
         const card = document.getElementById(`card-${id}`);
         const rua  = card.querySelector('h2').textContent;
@@ -616,7 +617,10 @@
         const pilotoEl  = document.getElementById(`piloto-${ponto.id}`);
 
         if (indoBtn)  indoBtn.classList.toggle('active', indo);
-        if (driveBtn) driveBtn.classList.toggle('active', drive);
+        if (driveBtn) {
+          driveBtn.classList.toggle('active', drive);
+          driveBtn.classList.toggle('locked', !feito && !drive);
+        }
 
         if (feitoBtn) {
           feitoBtn.classList.toggle('active', feito);
