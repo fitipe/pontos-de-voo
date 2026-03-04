@@ -528,7 +528,7 @@
           if (state.indo && state.piloto_indo) {
             // Já tem alguém indo — só o mesmo piloto pode desmarcar (via Desistir)
             if (state.piloto_indo.tel !== pilotoLogado.tel) {
-              alert(`Já sendo realizado por ${state.piloto_indo.nome}. Use o botão Desistir para liberar o ponto.`);
+              alert(`Já sendo realizado por ${state.piloto_indo.nome}.`);
             }
             return;
           }
