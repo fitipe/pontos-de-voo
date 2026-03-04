@@ -9,9 +9,9 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8eaf0; min-height: 100vh; width: 100%; }
 
-    /* SENHA */
-    #senha-screen { position: fixed; inset: 0; background: #0f1117; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; }
-    #senha-screen.hidden { display: none; }
+    /* SENHA / LOGIN */
+    #senha-screen, #login-screen { position: fixed; inset: 0; background: #0f1117; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 24px; }
+    #senha-screen.hidden, #login-screen.hidden { display: none; }
     .senha-card { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 14px; padding: 36px 32px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 20px; }
     .senha-title { text-align: center; }
     .senha-title h1 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #e8eaf0; }
@@ -19,13 +19,17 @@
     .senha-divider { height: 2px; background: #e63946; border-radius: 2px; }
     .senha-field { display: flex; flex-direction: column; gap: 8px; }
     .senha-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #636b7d; }
-    #senha-input { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 8px; padding: 12px 14px; font-size: 16px; color: #e8eaf0; letter-spacing: 3px; outline: none; transition: border-color 0.15s; width: 100%; }
-    #senha-input:focus { border-color: #4a5568; }
-    #senha-input.error { border-color: #e63946; animation: shake 0.3s; }
+    .senha-input { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 8px; padding: 12px 14px; font-size: 16px; color: #e8eaf0; outline: none; transition: border-color 0.15s; width: 100%; }
+    #senha-input { letter-spacing: 3px; }
+    .senha-input:focus { border-color: #4a5568; }
+    .senha-input.error { border-color: #e63946; animation: shake 0.3s; }
     @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
-    #senha-error { font-size: 12px; color: #e63946; min-height: 16px; text-align: center; }
-    #senha-btn { background: #e63946; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; letter-spacing: 0.5px; transition: background 0.15s; }
-    #senha-btn:hover { background: #c62d38; }
+    .senha-error { font-size: 12px; color: #e63946; min-height: 16px; text-align: center; }
+    .senha-btn { background: #e63946; border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 700; padding: 13px; cursor: pointer; letter-spacing: 0.5px; transition: background 0.15s; }
+    .senha-btn:hover { background: #c62d38; }
+    .phone-row { display: flex; gap: 8px; }
+    .ddd-input { width: 72px !important; }
+    .login-note { font-size: 11px; color: #636b7d; margin-top: 2px; }
 
     /* MODAL */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 8000; padding: 24px; }
@@ -87,12 +91,14 @@
     .card { background: #1a1f2e; border-radius: 10px; overflow: hidden; border: 1px solid #252b3b; transition: border-color 0.2s; }
     .card.status-feito { border-color: #4caf50; }
     .card.status-indo { border-color: #ffa726; }
+    .card.status-faltando { border-color: #e63946; }
     .card.status-arquivado { border-color: #34a853; opacity: 0.85; }
     .card-header { padding: 14px 16px 0; display: flex; align-items: flex-start; gap: 12px; }
     .card-maps { padding: 10px 16px 12px; }
     .point-num { background: #252b3b; color: #8892a4; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 3px 7px; flex-shrink: 0; margin-top: 2px; }
     .card.status-feito .point-num, .card.status-arquivado .point-num { background: #1b3a1f; color: #4caf50; }
     .card.status-indo .point-num { background: #3a2a0a; color: #ffa726; }
+    .card.status-faltando .point-num { background: #3a0a0a; color: #e63946; }
     .card-title { flex: 1; }
     .card-title h2 { font-size: 14px; font-weight: 600; color: #e8eaf0; line-height: 1.3; }
     .card-title .bairro { font-size: 12px; color: #8892a4; margin-top: 2px; }
@@ -123,24 +129,20 @@
     .checkboxes { display: flex; gap: 6px; }
     .check-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 6px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; white-space: nowrap; }
     .check-btn.indo-btn:not(.active):hover { border-color: #ffa726; color: #ffa726; }
-    .check-btn.feito-btn:not(.active):hover { border-color: #4caf50; color: #4caf50; }
+    .check-btn.feito-btn:not(.active):not(.locked):hover { border-color: #4caf50; color: #4caf50; }
     .check-btn.indo-btn.active { border-color: #ffa726; background: #3a2a0a; color: #ffa726; }
     .check-btn.feito-btn.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
+    .check-btn.feito-btn.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    .desistir-btn { display: none; width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #ffa726; background: transparent; color: #ffa726; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+    .desistir-btn.visible { display: block; }
+    .desistir-btn:hover { background: #3a2a0a; }
 
     .drive-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
     .drive-btn:not(.active):hover { border-color: #34a853; color: #34a853; }
     .drive-btn.active { border-color: #34a853; background: #0f2a1a; color: #34a853; cursor: default; }
 
-    .responsavel-area { display: flex; flex-direction: column; gap: 6px; }
-    .responsavel-label { font-size: 11px; color: #636b7d; text-transform: uppercase; letter-spacing: 0.5px; }
-    .responsavel-display { background: #0f1117; border: 1px solid #252b3b; border-radius: 6px; padding: 7px 10px; font-size: 13px; color: #e8eaf0; min-height: 32px; line-height: 1.5; white-space: pre-wrap; }
-    .responsavel-display:empty::before { content: '—'; color: #3a4052; }
-    .add-form { display: flex; gap: 8px; }
-    .add-input { flex: 1; background: #0f1117; border: 1px solid #252b3b; border-radius: 6px; padding: 7px 10px; font-size: 13px; color: #e8eaf0; outline: none; transition: border-color 0.15s; }
-    .add-input:focus { border-color: #4a5568; }
-    .add-input::placeholder { color: #3a4052; }
-    .add-btn { background: #252b3b; border: none; border-radius: 6px; color: #8892a4; font-size: 12px; font-weight: 600; padding: 7px 12px; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-    .add-btn:hover { background: #2f3850; color: #e8eaf0; }
+    .piloto-display { font-size: 12px; color: #8892a4; padding: 2px 0; min-height: 0; }
 
     #loading-overlay { position: fixed; inset: 0; background: #0f1117; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; z-index: 200; transition: opacity 0.3s; }
     #loading-overlay.hidden { opacity: 0; pointer-events: none; }
@@ -160,10 +162,34 @@
     <div class="senha-divider"></div>
     <div class="senha-field">
       <label>Senha</label>
-      <input id="senha-input" type="password" autocomplete="off" placeholder="••••••••">
-      <div id="senha-error"></div>
+      <input id="senha-input" class="senha-input" type="password" autocomplete="off" placeholder="••••••••">
+      <div id="senha-error" class="senha-error"></div>
     </div>
-    <button id="senha-btn">Entrar</button>
+    <button id="senha-btn" class="senha-btn">Entrar</button>
+  </div>
+</div>
+
+<div id="login-screen" class="hidden">
+  <div class="senha-card">
+    <div class="senha-title">
+      <h1>Identificação</h1>
+      <p>Informe seus dados antes de continuar</p>
+    </div>
+    <div class="senha-divider"></div>
+    <div class="senha-field">
+      <label>Nome</label>
+      <input id="login-nome" class="senha-input" type="text" autocomplete="name" placeholder="Seu nome completo">
+    </div>
+    <div class="senha-field">
+      <label>Telefone</label>
+      <div class="phone-row">
+        <input id="login-ddd" class="senha-input ddd-input" type="tel" inputmode="numeric" maxlength="2" placeholder="DDD">
+        <input id="login-num" class="senha-input" type="tel" inputmode="numeric" maxlength="9" placeholder="00000-0000">
+      </div>
+      <div class="login-note">Seu telefone não aparecerá para outros pilotos</div>
+    </div>
+    <div id="login-error" class="senha-error"></div>
+    <button id="login-btn" class="senha-btn">Confirmar</button>
   </div>
 </div>
 
@@ -219,7 +245,7 @@
           <div class="stat-num" id="feito-count-ativo">0</div>
           <div class="stat-label">pontos voados <span id="drive-pendente" style="display:none;font-size:10px;color:#e8eaf0;">(faltando enviar ao drive)</span></div>
         </div>
-        </div>
+      </div>
       <div class="mapa-wrapper">
         <div class="mapa-titulo">Mapa dos Pontos</div>
         <div id="mapa"></div>
@@ -271,6 +297,7 @@
   };
 
   const SENHA = "jfdrone";
+  let pilotoLogado = null; // { nome, tel }
 
   // MODAL
   function showModal(title, body, onSim) {
@@ -282,38 +309,89 @@
     document.getElementById('modal-sim').onclick = () => { close(); onSim(); };
   }
 
-  // AUTH
-  function checkSenha() {
-    if (sessionStorage.getItem('auth') === '1') {
-      document.getElementById('senha-screen').classList.add('hidden');
-      document.getElementById('app').classList.add('visible');
+  // LOGIN DE PILOTO
+  function checkLogin() {
+    const nome = sessionStorage.getItem('piloto_nome');
+    const tel  = sessionStorage.getItem('piloto_tel');
+    if (nome && tel) {
+      pilotoLogado = { nome, tel };
       return true;
     }
     return false;
   }
 
-  if (!checkSenha()) {
+  function showLoginScreen() {
+    document.getElementById('login-screen').classList.remove('hidden');
+    setTimeout(() => document.getElementById('login-nome').focus(), 50);
+  }
+
+  function confirmarLogin() {
+    const nome = document.getElementById('login-nome').value.trim();
+    const ddd  = document.getElementById('login-ddd').value.trim();
+    const num  = document.getElementById('login-num').value.replace(/\D/g, '');
+    const erro = document.getElementById('login-error');
+
+    if (!nome) { erro.textContent = 'Digite seu nome.'; return; }
+    if (!/^\d{2}$/.test(ddd)) { erro.textContent = 'DDD inválido (2 dígitos).'; return; }
+    if (num.length < 8 || num.length > 9) { erro.textContent = 'Número inválido (8 ou 9 dígitos).'; return; }
+
+    const tel = `(${ddd}) ${num}`;
+    sessionStorage.setItem('piloto_nome', nome);
+    sessionStorage.setItem('piloto_tel', tel);
+    pilotoLogado = { nome, tel };
+
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    initFirebase();
+  }
+
+  // AUTO-avança DDD → número
+  document.getElementById('login-ddd').addEventListener('input', e => {
+    if (e.target.value.replace(/\D/g, '').length === 2) {
+      document.getElementById('login-num').focus();
+    }
+  });
+  document.getElementById('login-btn').addEventListener('click', confirmarLogin);
+  ['login-nome','login-ddd','login-num'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') confirmarLogin();
+    });
+  });
+
+  // AUTH (senha da página)
+  function tentarSenha() {
     const input = document.getElementById('senha-input');
-    const btn   = document.getElementById('senha-btn');
-    const erro  = document.getElementById('senha-error');
-    function tentarSenha() {
-      if (input.value === SENHA) {
-        sessionStorage.setItem('auth', '1');
-        document.getElementById('senha-screen').classList.add('hidden');
+    if (input.value === SENHA) {
+      sessionStorage.setItem('auth', '1');
+      document.getElementById('senha-screen').classList.add('hidden');
+      if (checkLogin()) {
         document.getElementById('app').classList.add('visible');
         initFirebase();
       } else {
-        erro.textContent = 'Senha incorreta.';
-        input.classList.add('error');
-        input.value = '';
-        setTimeout(() => input.classList.remove('error'), 400);
-        input.focus();
+        showLoginScreen();
       }
+    } else {
+      document.getElementById('senha-error').textContent = 'Senha incorreta.';
+      input.classList.add('error');
+      input.value = '';
+      setTimeout(() => input.classList.remove('error'), 400);
+      input.focus();
     }
-    btn.addEventListener('click', tentarSenha);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') tentarSenha(); });
+  }
+
+  if (sessionStorage.getItem('auth') === '1') {
+    document.getElementById('senha-screen').classList.add('hidden');
+    if (checkLogin()) {
+      document.getElementById('app').classList.add('visible');
+      initFirebase();
+    } else {
+      showLoginScreen();
+    }
   } else {
-    initFirebase();
+    const input = document.getElementById('senha-input');
+    document.getElementById('senha-btn').addEventListener('click', tentarSenha);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') tentarSenha(); });
+    input.focus();
   }
 
   // TABS
@@ -354,11 +432,10 @@
   }
 
   function buildUI(db, pontos, totalRequisitados, totalHistorico) {
-    const container = document.getElementById('pontos-container');
+    const container        = document.getElementById('pontos-container');
     const arquivoContainer = document.getElementById('arquivo-container');
     let arquivoCount = 0;
 
-    // Cria todos os cards
     pontos.forEach(ponto => {
       const card = document.createElement('div');
       card.className = 'card';
@@ -378,18 +455,12 @@
         </div>` : ''}
         <div class="card-section">
           <div class="checkboxes">
-            <button class="check-btn indo-btn" data-id="${ponto.id}" data-field="indo">⏳ Indo Voar</button>
-            <button class="check-btn feito-btn" data-id="${ponto.id}" data-field="feito">✅ Vôo Concluído</button>
+            <button class="check-btn indo-btn" data-id="${ponto.id}">⏳ Indo Voar</button>
+            <button class="check-btn feito-btn" data-id="${ponto.id}">✅ Vôo Concluído</button>
           </div>
+          <button class="desistir-btn" data-id="${ponto.id}">↩ Desistir</button>
           <button class="drive-btn" data-id="${ponto.id}">📁 Arquivos enviados para o Drive</button>
-          <div class="responsavel-area">
-            <div class="responsavel-label">Piloto(s) responsável</div>
-            <div class="responsavel-display" id="display-${ponto.id}"></div>
-            <div class="add-form">
-              <input class="add-input" id="input-${ponto.id}" type="text" placeholder="Seu nome e telefone">
-              <button class="add-btn" data-id="${ponto.id}">Registrar</button>
-            </div>
-          </div>
+          <div class="piloto-display" id="piloto-${ponto.id}"></div>
         </div>`;
       container.appendChild(card);
     });
@@ -445,53 +516,76 @@
     });
     setTimeout(() => map.invalidateSize(), 300);
 
-    // Botões indo/feito
-    document.querySelectorAll('.check-btn').forEach(btn => {
+    // Botão Indo Voar
+    document.querySelectorAll('.indo-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const { id, field } = btn.dataset;
-        const updates = {};
-        updates[`pontos/${id}/${field}`] = !btn.classList.contains('active');
-        update(ref(db, '/'), updates);
+        const id = btn.dataset.id;
+        get(ref(db, `pontos/${id}`)).then(snap => {
+          const state = snap.val() || {};
+          if (state.indo && state.piloto_indo) {
+            // Já tem alguém indo — só o mesmo piloto pode desmarcar (via Desistir)
+            if (state.piloto_indo.tel !== pilotoLogado.tel) {
+              alert(`Já sendo realizado por ${state.piloto_indo.nome}. Use o botão Desistir para liberar o ponto.`);
+            }
+            return;
+          }
+          // Marcar indo
+          update(ref(db, '/'), {
+            [`pontos/${id}/indo`]: true,
+            [`pontos/${id}/piloto_indo`]: { nome: pilotoLogado.nome, tel: pilotoLogado.tel }
+          });
+        });
       });
     });
 
-    // Botão drive → confirmação
+    // Botão Desistir
+    document.querySelectorAll('.desistir-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        get(ref(db, `pontos/${id}`)).then(snap => {
+          const state = snap.val() || {};
+          if (!state.piloto_indo || state.piloto_indo.tel !== pilotoLogado.tel) return;
+          update(ref(db, '/'), {
+            [`pontos/${id}/indo`]: false,
+            [`pontos/${id}/piloto_indo`]: null
+          });
+        });
+      });
+    });
+
+    // Botão Vôo Concluído
+    document.querySelectorAll('.feito-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        if (btn.classList.contains('locked')) return;
+        get(ref(db, `pontos/${id}`)).then(snap => {
+          const state = snap.val() || {};
+          // Só quem clicou Indo pode marcar Feito
+          if (state.piloto_indo && state.piloto_indo.tel !== pilotoLogado.tel) return;
+          update(ref(db, '/'), {
+            [`pontos/${id}/feito`]: !btn.classList.contains('active'),
+            [`pontos/${id}/piloto_feito`]: !btn.classList.contains('active')
+              ? { nome: pilotoLogado.nome, tel: pilotoLogado.tel }
+              : null
+          });
+        });
+      });
+    });
+
+    // Botão Drive → confirmação
     document.querySelectorAll('.drive-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (btn.classList.contains('active')) return; // já arquivado
-        const id  = btn.dataset.id;
+        if (btn.classList.contains('active')) return;
+        const id   = btn.dataset.id;
         const card = document.getElementById(`card-${id}`);
         const rua  = card.querySelector('h2').textContent;
         showModal(
           'Confirmar envio ao Drive?',
           `<strong>${rua}</strong>Você confirma que realizou o vôo e enviou os arquivos para o Drive com sucesso?`,
           () => {
-            const updates = {};
-            updates[`pontos/${id}/drive`] = true;
-            update(ref(db, '/'), updates);
+            update(ref(db, '/'), { [`pontos/${id}/drive`]: true });
           }
         );
-      });
-    });
-
-    // Registrar responsável
-    document.querySelectorAll('.add-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const input = document.getElementById(`input-${id}`);
-        const nome = input.value.trim();
-        if (!nome) return;
-        get(ref(db, `pontos/${id}`)).then(snap => {
-          const atual = snap.val()?.responsavel || '';
-          update(ref(db, '/'), { [`pontos/${id}/responsavel`]: atual ? `${atual}\n${nome}` : nome });
-          input.value = '';
-        });
-      });
-    });
-
-    document.querySelectorAll('.add-input').forEach(input => {
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') document.querySelector(`.add-btn[data-id="${input.id.replace('input-','')}"]`).click();
       });
     });
 
@@ -510,20 +604,47 @@
         const indo  = !!state.indo;
         const feito = !!state.feito;
         const drive = !!state.drive;
+        const pilotoIndo  = state.piloto_indo  || null;
+        const pilotoFeito = state.piloto_feito || null;
 
-        document.querySelector(`.indo-btn[data-id="${ponto.id}"]`)?.classList.toggle('active', indo);
-        document.querySelector(`.feito-btn[data-id="${ponto.id}"]`)?.classList.toggle('active', feito);
-        const driveBtn = document.querySelector(`.drive-btn[data-id="${ponto.id}"]`);
+        // Botões indo/feito
+        const indoBtn   = document.querySelector(`.indo-btn[data-id="${ponto.id}"]`);
+        const feitoBtn  = document.querySelector(`.feito-btn[data-id="${ponto.id}"]`);
+        const desistirBtn = document.querySelector(`.desistir-btn[data-id="${ponto.id}"]`);
+        const driveBtn  = document.querySelector(`.drive-btn[data-id="${ponto.id}"]`);
+        const pilotoEl  = document.getElementById(`piloto-${ponto.id}`);
+
+        if (indoBtn)  indoBtn.classList.toggle('active', indo);
         if (driveBtn) driveBtn.classList.toggle('active', drive);
 
-        const display = document.getElementById(`display-${ponto.id}`);
-        if (display) display.textContent = state.responsavel || '';
+        if (feitoBtn) {
+          feitoBtn.classList.toggle('active', feito);
+          // Travar feito se outro piloto está indo (e não é o logado)
+          const outroVai = indo && pilotoIndo && pilotoIndo.tel !== pilotoLogado.tel;
+          feitoBtn.classList.toggle('locked', outroVai);
+        }
+
+        // Desistir: só visível para o piloto que clicou indo, antes de feito
+        if (desistirBtn) {
+          const euFui = indo && pilotoIndo && pilotoIndo.tel === pilotoLogado.tel && !feito;
+          desistirBtn.classList.toggle('visible', euFui);
+        }
+
+        // Piloto display (só nome, sem tel)
+        if (pilotoEl) {
+          if (feito && pilotoFeito) {
+            pilotoEl.textContent = `Piloto: ${pilotoFeito.nome}`;
+          } else if (indo && pilotoIndo) {
+            pilotoEl.textContent = `Indo: ${pilotoIndo.nome}`;
+          } else {
+            pilotoEl.textContent = '';
+          }
+        }
 
         const card = document.getElementById(`card-${ponto.id}`);
         if (!card) return;
 
         if (drive) {
-          // Mover para aba de arquivo se ainda estiver na aba ativa
           if (card.parentElement === container) {
             arquivoContainer.querySelector('.arquivo-vazio')?.remove();
             arquivoContainer.appendChild(card);
@@ -533,15 +654,13 @@
           driveCount++;
           arquivoCount++;
         } else {
-          // Mover de volta para aba ativa se necessário
           if (card.parentElement === arquivoContainer) {
             container.appendChild(card);
           }
+          card.className = 'card';
           card.classList.toggle('status-feito', feito);
           card.classList.toggle('status-indo', indo && !feito);
-          if (!card.classList.contains('status-feito') && !card.classList.contains('status-indo')) {
-            card.className = 'card';
-          }
+          card.classList.toggle('status-faltando', !indo && !feito);
           if (mapaMarkers[ponto.id]) {
             if (feito) { mapaMarkers[ponto.id].setStyle({ color:'#4caf50', fillColor:'#4caf50', opacity:1, fillOpacity:0.85 }); }
             else { const cor = indo ? '#ffa726' : '#e63946'; mapaMarkers[ponto.id].setStyle({ color:cor, fillColor:cor, opacity:1, fillOpacity:0.85 }); }
@@ -562,9 +681,6 @@
       const drivePendente = document.getElementById('drive-pendente');
       if (drivePendente) drivePendente.style.display = feitoCount > 0 ? '' : 'none';
       document.getElementById('feito-count').textContent = `${totalHistorico + driveCount}/${totalRequisitados}`;
-
-      const tabArquivo = document.getElementById('tab-arquivo-btn');
-      tabArquivo.textContent = 'Pontos já Sobrevoados & Registros Enviados ao Drive';
 
     }, () => {
       document.getElementById('loading-overlay').classList.add('hidden');
