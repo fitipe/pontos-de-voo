@@ -15,7 +15,6 @@
     .senha-card { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 14px; padding: 36px 32px; width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 20px; }
     .senha-title { text-align: center; }
     .senha-title h1 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #e8eaf0; }
-    .senha-title p { font-size: 12px; color: #8892a4; margin-top: 4px; }
     .senha-divider { height: 2px; background: #e63946; border-radius: 2px; }
     .senha-field { display: flex; flex-direction: column; gap: 8px; }
     .senha-field label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #636b7d; }
@@ -80,7 +79,12 @@
 
     .hint { font-size: 11px; color: #636b7d; line-height: 1.5; }
 
-    /* CARDS (Minhas + Todas) */
+    /* MAPA */
+    .mapa-wrapper { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 10px; overflow: hidden; }
+    .mapa-titulo { padding: 12px 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #636b7d; border-bottom: 1px solid #252b3b; }
+    .mapa-div { height: 360px; }
+
+    /* CARDS */
     .card { background: #1a1f2e; border-radius: 10px; overflow: hidden; border: 1px solid #252b3b; transition: border-color 0.2s; margin-bottom: 16px; }
     .card.status-feito { border-color: #4caf50; }
     .card.status-indo { border-color: #ffa726; }
@@ -116,12 +120,12 @@
     .call-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: #0f2a1a; color: #4caf50; text-decoration: none; font-size: 12px; font-weight: 600; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #34a853; transition: background 0.15s; }
     .call-btn:hover { background: #1b3a2a; }
 
-    /* FILTROS (aba Todas) */
+    /* FILTROS */
     .filter-bar { background: #1a1f2e; border-radius: 8px; padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap; }
     .filter-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; border: 1.5px solid #252b3b; background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; color: #636b7d; }
     .filter-btn.faltando.active { border-color: #e63946; background: #3a0a0a; color: #e63946; }
-    .filter-btn.indo.active { border-color: #ffa726; background: #3a2a0a; color: #ffa726; }
-    .filter-btn.feito.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
+    .filter-btn.indo.active    { border-color: #ffa726; background: #3a2a0a; color: #ffa726; }
+    .filter-btn.feito.active   { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
     .filter-btn:not(.active):hover { border-color: #4a5568; color: #8892a4; }
 
     .vazio { font-size: 13px; color: #3a4052; text-align: center; padding: 32px 0; }
@@ -160,7 +164,6 @@
 </head>
 <body>
 
-<!-- TELA DE SENHA + NOME -->
 <div id="senha-screen">
   <div class="senha-card">
     <div class="senha-title">
@@ -180,7 +183,6 @@
   </div>
 </div>
 
-<!-- MODAL DE CONFIRMAÇÃO -->
 <div class="modal-overlay hidden" id="modal">
   <div class="modal-box">
     <div class="modal-title" id="modal-title"></div>
@@ -192,7 +194,6 @@
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <header>
     <h1>Solicitação de Vôo <span id="header-nome">Defesa Civil JF</span></h1>
@@ -208,7 +209,6 @@
   <!-- NOVA SOLICITAÇÃO -->
   <div class="tab-panel active" id="tab-nova">
     <div class="container">
-
       <div class="section">
         <div class="section-label">Link do Google Maps (opcional)</div>
         <div class="field-row">
@@ -218,7 +218,6 @@
         <div class="hint">Funciona com links curtos (maps.app.goo.gl) e URLs completas.</div>
         <div id="link-status" style="font-size:12px; min-height:16px;"></div>
       </div>
-
       <div class="section">
         <div class="section-label">Endereço</div>
         <div class="field-row">
@@ -228,7 +227,6 @@
         <div class="hint">Digite o endereço e clique em "Buscar no Mapa" — ou clique diretamente no mapa.</div>
         <div id="mapa-req"></div>
       </div>
-
       <div class="section">
         <div class="section-label">Informações Adicionais (opcional)</div>
         <textarea id="info-input" rows="3" placeholder="..." style="background:#0f1117;border:1px solid #252b3b;border-radius:6px;padding:9px 12px;font-size:13px;color:#e8eaf0;outline:none;width:100%;resize:vertical;font-family:inherit;transition:border-color 0.15s;"></textarea>
@@ -238,29 +236,30 @@
           <div class="upload-previews" id="upload-previews"></div>
         </div>
       </div>
-
       <div class="section">
         <div class="section-label">Confirmação</div>
         <div class="confirmacao-box" id="confirmacao-box">
           <div class="conf-vazia">Nenhum ponto selecionado ainda.</div>
         </div>
       </div>
-
       <div class="section" style="gap:12px;">
         <div id="status-envio"></div>
         <button class="btn btn-primary" id="btn-enviar" disabled>Enviar Solicitação</button>
       </div>
-
     </div>
   </div>
 
   <!-- TODAS AS SOLICITAÇÕES -->
   <div class="tab-panel" id="tab-todas">
     <div class="container">
-      <div class="filter-bar" id="filter-bar">
-        <button class="filter-btn faltando active" data-filter="faltando">● <span id="count-faltando">0</span> faltando</button>
-        <button class="filter-btn indo active" data-filter="indo">● <span id="count-indo">0</span> em andamento</button>
-        <button class="filter-btn feito active" data-filter="feito">● <span id="count-feito">0</span> concluídos</button>
+      <div class="filter-bar">
+        <button class="filter-btn faltando active" data-tab="todas" data-filter="faltando">● <span id="t-count-faltando">0</span> faltando</button>
+        <button class="filter-btn indo active"    data-tab="todas" data-filter="indo">● <span id="t-count-indo">0</span> em andamento</button>
+        <button class="filter-btn feito active"   data-tab="todas" data-filter="feito">● <span id="t-count-feito">0</span> concluídos</button>
+      </div>
+      <div class="mapa-wrapper">
+        <div class="mapa-titulo">Mapa das Solicitações</div>
+        <div id="mapa-todas" class="mapa-div"></div>
       </div>
       <div id="todas-lista"></div>
     </div>
@@ -269,13 +268,20 @@
   <!-- MINHAS SOLICITAÇÕES -->
   <div class="tab-panel" id="tab-minhas">
     <div class="container">
+      <div class="filter-bar">
+        <button class="filter-btn faltando active" data-tab="minhas" data-filter="faltando">● <span id="m-count-faltando">0</span> faltando</button>
+        <button class="filter-btn indo active"    data-tab="minhas" data-filter="indo">● <span id="m-count-indo">0</span> em andamento</button>
+        <button class="filter-btn feito active"   data-tab="minhas" data-filter="feito">● <span id="m-count-feito">0</span> concluídos</button>
+      </div>
+      <div class="mapa-wrapper">
+        <div class="mapa-titulo">Mapa das Minhas Solicitações</div>
+        <div id="mapa-minhas" class="mapa-div"></div>
+      </div>
       <div id="minhas-lista"></div>
     </div>
   </div>
-
 </div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox-overlay hidden" id="lightbox">
   <div class="lightbox-box">
     <button class="lightbox-close" id="lb-close">×</button>
@@ -289,7 +295,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getDatabase, ref, get, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
@@ -330,7 +336,6 @@
   if (!nomeOficial) {
     const senhaInput = document.getElementById('senha-input');
     const nomeInput  = document.getElementById('nome-input');
-    const btn        = document.getElementById('senha-btn');
     const erro       = document.getElementById('senha-error');
 
     function tentarEntrar() {
@@ -353,9 +358,9 @@
       initApp();
     }
 
-    btn.addEventListener('click', tentarEntrar);
+    document.getElementById('senha-btn').addEventListener('click', tentarEntrar);
     senhaInput.addEventListener('keydown', e => { if (e.key === 'Enter') tentarEntrar(); });
-    nomeInput.addEventListener('keydown', e => { if (e.key === 'Enter') senhaInput.focus(); });
+    nomeInput.addEventListener('keydown',  e => { if (e.key === 'Enter') senhaInput.focus(); });
   } else {
     initApp();
   }
@@ -390,12 +395,27 @@
   lightbox.addEventListener('click', e => { if (e.target === lightbox) lbClose(); });
   document.addEventListener('keydown', e => {
     if (lightbox.classList.contains('hidden')) return;
-    if (e.key === 'ArrowLeft') lbShow(lbIdx - 1);
+    if (e.key === 'ArrowLeft')  lbShow(lbIdx - 1);
     else if (e.key === 'ArrowRight') lbShow(lbIdx + 1);
     else if (e.key === 'Escape') lbClose();
   });
 
   // ── HELPERS ──
+  const STATUS_COLOR = { faltando: '#e63946', indo: '#ffa726', feito: '#4caf50' };
+
+  function cardStatus(state) {
+    if (state.feito || state.drive) return 'feito';
+    if (state.indo)                 return 'indo';
+    return 'faltando';
+  }
+
+  function cardClass(state) {
+    if (state.drive) return 'card status-arquivado';
+    if (state.feito) return 'card status-feito';
+    if (state.indo)  return 'card status-indo';
+    return 'card status-faltando';
+  }
+
   function pilotoDisplay(state) {
     if (state.feito && state.piloto_feito) return `Piloto: ${state.piloto_feito.nome}`;
     if (state.indo  && state.piloto_indo)  return `Indo: ${state.piloto_indo.nome}`;
@@ -408,21 +428,8 @@
     return null;
   }
 
-  function cardClass(state) {
-    if (state.drive) return 'card status-arquivado';
-    if (state.feito) return 'card status-feito';
-    if (state.indo)  return 'card status-indo';
-    return 'card status-faltando';
-  }
-
-  function cardStatus(state) {
-    if (state.feito) return 'feito';
-    if (state.indo)  return 'indo';
-    return 'faltando';
-  }
-
   function buildCardHTML(item, opts = {}) {
-    const { showSolicitante = false, showCancel = false } = opts;
+    const { prefix = '', showSolicitante = false, showCancel = false } = opts;
     return `
       <div class="card-header">
         <div class="point-num">${String(item.num).padStart(2,'0')}</div>
@@ -438,12 +445,12 @@
       </div>` : ''}
       <div class="card-section">
         <div class="checkboxes">
-          <div class="check-btn indo-btn" id="${opts.prefix}indo-${item.id}">⏳ Indo Voar</div>
-          <div class="check-btn feito-btn" id="${opts.prefix}feito-${item.id}">✅ Vôo Concluído</div>
+          <div class="check-btn indo-btn"  id="${prefix}indo-${item.id}">⏳ Indo Voar</div>
+          <div class="check-btn feito-btn" id="${prefix}feito-${item.id}">✅ Vôo Concluído</div>
         </div>
-        <div class="drive-btn-ro" id="${opts.prefix}drive-${item.id}">📁 Arquivos enviados para o Drive</div>
-        <div class="piloto-display" id="${opts.prefix}piloto-${item.id}"></div>
-        <div id="${opts.prefix}call-${item.id}"></div>
+        <div class="drive-btn-ro" id="${prefix}drive-${item.id}">📁 Arquivos enviados para o Drive</div>
+        <div class="piloto-display" id="${prefix}piloto-${item.id}"></div>
+        <div id="${prefix}call-${item.id}"></div>
         ${showSolicitante ? `<div class="solicitante-label">Solicitado por: ${item.criado_por || '—'}</div>` : ''}
       </div>
       ${showCancel ? `<div class="card-section"><button class="btn btn-danger sol-cancel-btn" data-id="${item.id}" data-rua="${item.rua}">Cancelar Solicitação</button></div>` : ''}`;
@@ -454,10 +461,8 @@
     document.getElementById(`${prefix}feito-${id}`)?.classList.toggle('active', !!state.feito);
     const driveEl = document.getElementById(`${prefix}drive-${id}`);
     if (driveEl) driveEl.classList.toggle('active', !!state.drive);
-
     const pilotoEl = document.getElementById(`${prefix}piloto-${id}`);
     if (pilotoEl) pilotoEl.textContent = pilotoDisplay(state);
-
     const callEl = document.getElementById(`${prefix}call-${id}`);
     if (callEl) {
       const tel = pilotoTel(state);
@@ -465,10 +470,39 @@
     }
   }
 
+  // ── MAPA ──
+  function createMap(divId) {
+    const m = L.map(divId).setView([-21.762, -43.350], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(m);
+    return m;
+  }
+
+  function markerColor(status) { return STATUS_COLOR[status] || '#e63946'; }
+
+  function addMarker(map, item, status) {
+    const cor = markerColor(status);
+    const m = L.circleMarker([item.lat, item.lng], { radius: 10, color: cor, fillColor: cor, fillOpacity: 0.85, weight: 2 }).addTo(map);
+    m.bindPopup(`<b>${String(item.num).padStart(2,'0')} — ${item.rua}</b>${item.bairro ? '<br>' + item.bairro : ''}`);
+    return m;
+  }
+
+  function applyMapFilter(markers, filtros) {
+    Object.values(markers).forEach(({ marker, status }) => {
+      const visible = filtros[status];
+      marker.setStyle({ opacity: visible ? 1 : 0, fillOpacity: visible ? 0.85 : 0 });
+    });
+  }
+
   function initApp() {
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
     let unsubMinhas = null, unsubTodas = null;
+    let mapTodas = null, mapMinhas = null;
+    const markersTodas  = {}; // { id: { marker, status } }
+    const markersMinhas = {};
+
+    const filtrosTodas  = { faltando: true, indo: true, feito: true };
+    const filtrosMinhas = { faltando: true, indo: true, feito: true };
 
     document.getElementById('header-nome').textContent = nomeOficial;
 
@@ -479,22 +513,43 @@
         document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
-        if (btn.dataset.tab === 'minhas') renderMinhas();
-        if (btn.dataset.tab === 'todas')  renderTodas();
+        if (btn.dataset.tab === 'todas')  { renderTodas();  setTimeout(() => mapTodas?.invalidateSize(),  200); }
+        if (btn.dataset.tab === 'minhas') { renderMinhas(); setTimeout(() => mapMinhas?.invalidateSize(), 200); }
       });
     });
 
-    // ── MAPA ──
+    // ── FILTROS ──
+    function applyFilter(tab) {
+      const filtros  = tab === 'todas' ? filtrosTodas : filtrosMinhas;
+      const listaId  = tab === 'todas' ? 'todas-lista' : 'minhas-lista';
+      const markers  = tab === 'todas' ? markersTodas  : markersMinhas;
+      document.querySelectorAll(`#${listaId} .card`).forEach(card => {
+        card.classList.toggle('hidden-by-filter', !filtros[card.dataset.status]);
+      });
+      applyMapFilter(markers, filtros);
+    }
+
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        const f   = btn.dataset.filter;
+        const filtros = tab === 'todas' ? filtrosTodas : filtrosMinhas;
+        filtros[f] = !filtros[f];
+        btn.classList.toggle('active', filtros[f]);
+        applyFilter(tab);
+      });
+    });
+
+    // ── MAPA (Nova Solicitação) ──
     let selectedLat = null, selectedLng = null, selectedEndereco = '', linkSelecionado = '';
     let mapMarker = null;
-
-    const map = L.map('mapa-req').setView([-21.762, -43.350], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+    const mapReq = L.map('mapa-req').setView([-21.762, -43.350], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(mapReq);
 
     function setMarker(lat, lng) {
-      if (mapMarker) map.removeLayer(mapMarker);
-      mapMarker = L.marker([lat, lng]).addTo(map);
-      map.setView([lat, lng], 16);
+      if (mapMarker) mapReq.removeLayer(mapMarker);
+      mapMarker = L.marker([lat, lng]).addTo(mapReq);
+      mapReq.setView([lat, lng], 16);
       selectedLat = lat; selectedLng = lng;
     }
 
@@ -540,7 +595,7 @@
       document.getElementById('btn-enviar').disabled = false;
     }
 
-    map.on('click', async e => {
+    mapReq.on('click', async e => {
       const { lat, lng } = e.latlng;
       setMarker(lat, lng);
       document.getElementById('endereco-input').value = 'Buscando endereço...';
@@ -566,18 +621,15 @@
       if (!url) return;
       statusEl.style.color = '#8892a4';
       statusEl.textContent = 'Verificando...';
-
       let coords = parseGoogleMapsUrl(url);
       let finalLink = url;
-
       if (!coords) {
         try {
           const resp = await fetch(`https://maps-proxy.fitbritto.workers.dev/?url=${encodeURIComponent(url)}`);
           finalLink = await resp.text();
           coords = parseGoogleMapsUrl(finalLink);
-        } catch { /* proxy falhou */ }
+        } catch {}
       }
-
       if (coords) {
         setMarker(coords.lat, coords.lng);
         linkSelecionado = finalLink;
@@ -595,20 +647,15 @@
 
     // ── IMAGENS ──
     let imagensBase64 = [];
-
     document.getElementById('upload-area').addEventListener('click', e => {
       if (e.target.classList.contains('upload-thumb-remove')) return;
       document.getElementById('img-input').click();
     });
-
     const MAX_IMGS = 7;
-
     document.getElementById('img-input').addEventListener('change', async e => {
-      const atual = imagensBase64.filter(Boolean).length;
-      const restam = MAX_IMGS - atual;
+      const restam = MAX_IMGS - imagensBase64.filter(Boolean).length;
       if (restam <= 0) { e.target.value = ''; return; }
-      const files = Array.from(e.target.files).slice(0, restam);
-      for (const file of files) {
+      for (const file of Array.from(e.target.files).slice(0, restam)) {
         const b64 = await resizeImagem(file, 800, 0.72);
         const idx = imagensBase64.length;
         imagensBase64.push(b64);
@@ -641,7 +688,6 @@
     }
 
     function adicionarThumb(b64, idx) {
-      const previews = document.getElementById('upload-previews');
       const thumb = document.createElement('div');
       thumb.className = 'upload-thumb';
       thumb.innerHTML = `<img src="${b64}" onclick="window.open(this.src)"><button class="upload-thumb-remove" data-idx="${idx}">×</button>`;
@@ -651,66 +697,56 @@
         thumb.remove();
         atualizarUploadLabel();
       });
-      previews.appendChild(thumb);
+      document.getElementById('upload-previews').appendChild(thumb);
     }
 
     function atualizarUploadLabel() {
       const count = imagensBase64.filter(Boolean).length;
       const label = document.getElementById('upload-label');
       const area  = document.getElementById('upload-area');
-      if (count >= MAX_IMGS) {
-        label.textContent = 'Limite de 7 imagens atingido';
-        area.style.cursor = 'default';
-      } else if (count > 0) {
-        label.textContent = `+ Adicionar mais (${count}/${MAX_IMGS})`;
-        area.style.cursor = 'pointer';
-      } else {
-        label.textContent = '+ Adicionar imagens de referência (máx. 7)';
-        area.style.cursor = 'pointer';
-      }
+      if (count >= MAX_IMGS) { label.textContent = 'Limite de 7 imagens atingido'; area.style.cursor = 'default'; }
+      else if (count > 0)    { label.textContent = `+ Adicionar mais (${count}/${MAX_IMGS})`; area.style.cursor = 'pointer'; }
+      else                   { label.textContent = '+ Adicionar imagens de referência (máx. 7)'; area.style.cursor = 'pointer'; }
     }
 
     // ── ENVIAR ──
     document.getElementById('btn-enviar').addEventListener('click', () => {
       if (!selectedLat || !selectedEndereco) return;
-      showModal(
-        'Confirmar Solicitação de Vôo?',
+      showModal('Confirmar Solicitação de Vôo?',
         `<strong>${selectedEndereco}</strong><br><br>Essa solicitação será enviada para a página de pilotos.`,
-        confirmarEnvio
-      );
+        confirmarEnvio);
     });
 
     async function confirmarEnvio() {
       const btnEnviar = document.getElementById('btn-enviar');
       const statusEl  = document.getElementById('status-envio');
       btnEnviar.disabled = true;
-      statusEl.textContent = 'Enviando...';
-      statusEl.className = '';
-
+      statusEl.textContent = 'Enviando...'; statusEl.className = '';
       try {
         const metaSnap = await get(ref(db, 'meta'));
         const meta = metaSnap.val() || {};
         const proximoNum = meta.proximo_num || 18;
         const novoId = `p${String(proximoNum).padStart(2,'0')}`;
         const partes = selectedEndereco.split(',').map(s => s.trim());
-        const rua    = partes[0] || selectedEndereco;
-        const bairro = partes[2] || partes[1] || '';
-
-        const updates = {};
-        const infoAdicional = document.getElementById('info-input').value.trim();
+        const configObj = {
+          num: proximoNum, rua: partes[0] || selectedEndereco,
+          bairro: partes[2] || partes[1] || '',
+          lat: selectedLat, lng: selectedLng,
+          link: linkSelecionado || '', criado_por: nomeOficial,
+          info_adicional: document.getElementById('info-input').value.trim()
+        };
         const imagens = imagensBase64.filter(Boolean);
-        const configObj = { num: proximoNum, rua, bairro, lat: selectedLat, lng: selectedLng, link: linkSelecionado || '', criado_por: nomeOficial, info_adicional: infoAdicional };
         if (imagens.length) configObj.imagens = imagens;
-        updates[`config/${novoId}`] = configObj;
-        updates[`pontos/${novoId}`] = { indo: false, feito: false, drive: false };
-        updates['meta/proximo_num'] = proximoNum + 1;
-        updates['meta/total_requisitados'] = (meta.total_requisitados || 0) + 1;
 
-        await update(ref(db, '/'), updates);
+        await update(ref(db, '/'), {
+          [`config/${novoId}`]: configObj,
+          [`pontos/${novoId}`]: { indo: false, feito: false, drive: false },
+          'meta/proximo_num': proximoNum + 1,
+          'meta/total_requisitados': (meta.total_requisitados || 0) + 1
+        });
 
         statusEl.textContent = `✓ Solicitação ${String(proximoNum).padStart(2,'0')} enviada!`;
         statusEl.className = 'ok';
-
         document.getElementById('link-input').value = '';
         document.getElementById('endereco-input').value = '';
         document.getElementById('info-input').value = '';
@@ -718,11 +754,10 @@
         imagensBase64 = [];
         document.getElementById('upload-previews').innerHTML = '';
         atualizarUploadLabel();
-        if (mapMarker) { map.removeLayer(mapMarker); mapMarker = null; }
+        if (mapMarker) { mapReq.removeLayer(mapMarker); mapMarker = null; }
         selectedLat = null; selectedLng = null; selectedEndereco = ''; linkSelecionado = '';
         updateConfirmacao();
         setTimeout(() => { statusEl.textContent = ''; btnEnviar.disabled = false; }, 4000);
-
       } catch {
         statusEl.textContent = 'Erro ao enviar. Tente novamente.';
         statusEl.className = 'erro';
@@ -731,24 +766,6 @@
     }
 
     // ── TODAS AS SOLICITAÇÕES ──
-    const filtros = { faltando: true, indo: true, feito: true };
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const f = btn.dataset.filter;
-        filtros[f] = !filtros[f];
-        btn.classList.toggle('active', filtros[f]);
-        applyFilter();
-      });
-    });
-
-    function applyFilter() {
-      document.querySelectorAll('#todas-lista .card').forEach(card => {
-        const status = card.dataset.status;
-        card.classList.toggle('hidden-by-filter', !filtros[status]);
-      });
-    }
-
     async function renderTodas() {
       if (unsubTodas) { unsubTodas(); unsubTodas = null; }
 
@@ -757,9 +774,18 @@
 
       const snap = await get(ref(db, 'config'));
       const all  = snap.val() || {};
-      const todos = Object.entries(all)
-        .map(([id, d]) => ({ id, ...d }))
-        .sort((a, b) => a.num - b.num);
+      const todos = Object.entries(all).map(([id, d]) => ({ id, ...d })).sort((a, b) => a.num - b.num);
+
+      // Init mapa
+      if (!mapTodas) {
+        mapTodas = createMap('mapa-todas');
+      } else {
+        Object.values(markersTodas).forEach(({ marker }) => mapTodas.removeLayer(marker));
+        Object.keys(markersTodas).forEach(k => delete markersTodas[k]);
+      }
+
+      document.getElementById('tab-todas-btn').textContent =
+        todos.length > 0 ? `Todas as Solicitações (${todos.length})` : 'Todas as Solicitações';
 
       if (todos.length === 0) {
         lista.innerHTML = '<div class="vazio">Nenhuma solicitação ainda.</div>';
@@ -769,13 +795,20 @@
       const imgMap = {};
       todos.forEach(item => { if (item.imagens?.length) imgMap[item.id] = item.imagens; });
 
+      // Criar marcadores (status inicial = faltando)
+      todos.forEach(item => {
+        if (item.lat && item.lng) {
+          markersTodas[item.id] = { marker: addMarker(mapTodas, item, 'faltando'), status: 'faltando' };
+        }
+      });
+
       lista.innerHTML = '';
       todos.forEach(item => {
         const card = document.createElement('div');
         card.className = 'card status-faltando';
         card.id = `tsol-${item.id}`;
         card.dataset.status = 'faltando';
-        card.innerHTML = buildCardHTML(item, { prefix: 'tsol-', showSolicitante: true, showCancel: false });
+        card.innerHTML = buildCardHTML(item, { prefix: 'tsol-', showSolicitante: true });
         lista.appendChild(card);
       });
 
@@ -790,30 +823,33 @@
         todos.forEach(item => {
           const state  = data[item.id] || {};
           const status = cardStatus(state);
-          const card   = document.getElementById(`tsol-${item.id}`);
-          if (card) {
-            card.className = cardClass(state);
-            card.dataset.status = status;
-          }
+          const cor    = markerColor(status);
+
+          const card = document.getElementById(`tsol-${item.id}`);
+          if (card) { card.className = cardClass(state); card.dataset.status = status; }
           updateCardState('tsol-', item.id, state);
+
+          if (markersTodas[item.id]) {
+            markersTodas[item.id].marker.setStyle({ color: cor, fillColor: cor });
+            markersTodas[item.id].status = status;
+          }
+
           if (status === 'faltando') cFaltando++;
           else if (status === 'indo') cIndo++;
-          else if (status === 'feito') cFeito++;
+          else cFeito++;
         });
 
-        document.getElementById('count-faltando').textContent = cFaltando;
-        document.getElementById('count-indo').textContent = cIndo;
-        document.getElementById('count-feito').textContent = cFeito;
-        applyFilter();
-
-        const tabBtn = document.getElementById('tab-todas-btn');
-        tabBtn.textContent = `Todas as Solicitações (${todos.length})`;
+        document.getElementById('t-count-faltando').textContent = cFaltando;
+        document.getElementById('t-count-indo').textContent     = cIndo;
+        document.getElementById('t-count-feito').textContent    = cFeito;
+        applyFilter('todas');
       });
     }
 
     // ── MINHAS SOLICITAÇÕES ──
     async function renderMinhas() {
       if (unsubMinhas) { unsubMinhas(); unsubMinhas = null; }
+
       const lista = document.getElementById('minhas-lista');
       lista.innerHTML = '<div class="vazio">Carregando...</div>';
 
@@ -824,8 +860,16 @@
         .map(([id, d]) => ({ id, ...d }))
         .sort((a, b) => a.num - b.num);
 
-      const tabBtn = document.getElementById('tab-minhas-btn');
-      tabBtn.textContent = sols.length > 0 ? `Minhas Solicitações (${sols.length})` : 'Minhas Solicitações';
+      // Init mapa
+      if (!mapMinhas) {
+        mapMinhas = createMap('mapa-minhas');
+      } else {
+        Object.values(markersMinhas).forEach(({ marker }) => mapMinhas.removeLayer(marker));
+        Object.keys(markersMinhas).forEach(k => delete markersMinhas[k]);
+      }
+
+      document.getElementById('tab-minhas-btn').textContent =
+        sols.length > 0 ? `Minhas Solicitações (${sols.length})` : 'Minhas Solicitações';
 
       if (sols.length === 0) {
         lista.innerHTML = '<div class="vazio">Nenhuma solicitação encontrada.</div>';
@@ -835,22 +879,27 @@
       const imgMap = {};
       sols.forEach(sol => { if (sol.imagens?.length) imgMap[sol.id] = sol.imagens; });
 
+      sols.forEach(item => {
+        if (item.lat && item.lng) {
+          markersMinhas[item.id] = { marker: addMarker(mapMinhas, item, 'faltando'), status: 'faltando' };
+        }
+      });
+
       lista.innerHTML = '';
       sols.forEach(sol => {
         const card = document.createElement('div');
         card.className = 'card status-faltando';
         card.id = `msol-${sol.id}`;
-        card.innerHTML = buildCardHTML(sol, { prefix: 'msol-', showSolicitante: false, showCancel: true });
+        card.dataset.status = 'faltando';
+        card.innerHTML = buildCardHTML(sol, { prefix: 'msol-', showCancel: true });
         lista.appendChild(card);
       });
 
       lista.querySelectorAll('.sol-cancel-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-          showModal(
-            'Cancelar solicitação?',
+          showModal('Cancelar solicitação?',
             `<strong>${btn.dataset.rua}</strong><br><br>Isso removerá esta solicitação da página de pilotos permanentemente.`,
-            () => cancelarSolicitacao(btn.dataset.id)
-          );
+            () => cancelarSolicitacao(btn.dataset.id));
         });
       });
 
@@ -860,12 +909,31 @@
 
       unsubMinhas = onValue(ref(db, 'pontos'), snap => {
         const data = snap.val() || {};
+        let cFaltando = 0, cIndo = 0, cFeito = 0;
+
         sols.forEach(sol => {
-          const state = data[sol.id] || {};
-          const card  = document.getElementById(`msol-${sol.id}`);
-          if (card) card.className = cardClass(state);
+          const state  = data[sol.id] || {};
+          const status = cardStatus(state);
+          const cor    = markerColor(status);
+
+          const card = document.getElementById(`msol-${sol.id}`);
+          if (card) { card.className = cardClass(state); card.dataset.status = status; }
           updateCardState('msol-', sol.id, state);
+
+          if (markersMinhas[sol.id]) {
+            markersMinhas[sol.id].marker.setStyle({ color: cor, fillColor: cor });
+            markersMinhas[sol.id].status = status;
+          }
+
+          if (status === 'faltando') cFaltando++;
+          else if (status === 'indo') cIndo++;
+          else cFeito++;
         });
+
+        document.getElementById('m-count-faltando').textContent = cFaltando;
+        document.getElementById('m-count-indo').textContent     = cIndo;
+        document.getElementById('m-count-feito').textContent    = cFeito;
+        applyFilter('minhas');
       });
     }
 
