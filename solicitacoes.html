@@ -471,7 +471,8 @@
     const callEl = document.getElementById(`${prefix}call-${id}`);
     if (callEl) {
       const tel = pilotoTel(state);
-      callEl.innerHTML = tel ? `<a class="call-btn" href="tel:+55${tel}">📞 Ligar para o piloto</a>` : '';
+      callEl.textContent = tel || '';
+      callEl.className = tel ? 'piloto-display' : '';
     }
   }
 
