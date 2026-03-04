@@ -40,7 +40,7 @@
 
     /* TABS */
     .tabs { display: flex; border-bottom: 1px solid #252b3b; background: #1a1f2e; }
-    .tab-btn { padding: 12px 20px; font-size: 13px; font-weight: 600; color: #636b7d; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; }
+    .tab-btn { flex: 1; padding: 12px 10px; font-size: 13px; font-weight: 600; color: #636b7d; background: none; border: none; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; white-space: normal; text-align: center; line-height: 1.3; }
     .tab-btn.active { color: #e8eaf0; border-bottom-color: #e63946; }
     .tab-btn:hover:not(.active) { color: #8892a4; }
     .tab-panel { display: none; }
@@ -80,24 +80,18 @@
 
     .hint { font-size: 11px; color: #636b7d; line-height: 1.5; }
 
-    /* MINHAS SOLICITAÇÕES */
-    .sol-card { background: #1a1f2e; border: 1px solid #252b3b; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-    .sol-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-    .sol-num { background: #252b3b; color: #8892a4; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 3px 7px; flex-shrink: 0; }
-    .sol-info { flex: 1; }
-    .sol-rua { font-size: 14px; font-weight: 600; color: #e8eaf0; }
-    .sol-bairro { font-size: 12px; color: #8892a4; margin-top: 2px; }
-    .sol-vazio { font-size: 13px; color: #3a4052; text-align: center; padding: 24px 0; }
-
-    /* CARD MIRROR */
-    .card { background: #1a1f2e; border-radius: 10px; overflow: hidden; border: 1px solid #252b3b; transition: border-color 0.2s; }
+    /* CARDS (Minhas + Todas) */
+    .card { background: #1a1f2e; border-radius: 10px; overflow: hidden; border: 1px solid #252b3b; transition: border-color 0.2s; margin-bottom: 16px; }
     .card.status-feito { border-color: #4caf50; }
     .card.status-indo { border-color: #ffa726; }
+    .card.status-faltando { border-color: #e63946; }
     .card.status-arquivado { border-color: #34a853; opacity: 0.85; }
+    .card.hidden-by-filter { display: none; }
     .card-header { padding: 14px 16px 0; display: flex; align-items: flex-start; gap: 12px; }
     .point-num { background: #252b3b; color: #8892a4; font-size: 11px; font-weight: 700; border-radius: 5px; padding: 3px 7px; flex-shrink: 0; margin-top: 2px; }
     .card.status-feito .point-num, .card.status-arquivado .point-num { background: #1b3a1f; color: #4caf50; }
     .card.status-indo .point-num { background: #3a2a0a; color: #ffa726; }
+    .card.status-faltando .point-num { background: #3a0a0a; color: #e63946; }
     .card-title { flex: 1; }
     .card-title h2 { font-size: 14px; font-weight: 600; color: #e8eaf0; line-height: 1.3; }
     .card-title .bairro { font-size: 12px; color: #8892a4; margin-top: 2px; }
@@ -111,19 +105,26 @@
     .fotos-btn { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; background: #1a2a3a; color: #60a5fa; border: 1.5px solid #1e3a5f; border-radius: 6px; font-size: 12px; font-weight: 600; padding: 7px 10px; cursor: pointer; transition: background 0.15s; }
     .fotos-btn:hover { background: #1e3a5f; }
     .checkboxes { display: flex; gap: 6px; }
-    .check-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 6px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; white-space: nowrap; }
-    .check-btn.readonly { cursor: default; pointer-events: none; }
+    .check-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 7px 6px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: default; pointer-events: none; }
     .check-btn.indo-btn.active { border-color: #ffa726; background: #3a2a0a; color: #ffa726; }
     .check-btn.feito-btn.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
-    .drive-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; }
-    .drive-btn.readonly { cursor: default; pointer-events: none; }
-    .drive-btn.active { border-color: #34a853; background: #0f2a1a; color: #34a853; }
-    .responsavel-area { display: flex; flex-direction: column; gap: 6px; }
-    .responsavel-label { font-size: 11px; color: #636b7d; text-transform: uppercase; letter-spacing: 0.5px; }
-    .responsavel-display { background: #0f1117; border: 1px solid #252b3b; border-radius: 6px; padding: 7px 10px; font-size: 13px; color: #e8eaf0; min-height: 32px; line-height: 1.5; white-space: pre-wrap; }
-    .responsavel-display:empty::before { content: '—'; color: #3a4052; }
+    .drive-btn-ro { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: default; pointer-events: none; }
+    .drive-btn-ro.active { border-color: #34a853; background: #0f2a1a; color: #34a853; }
+    .piloto-display { font-size: 12px; color: #8892a4; }
+    .piloto-display:empty { display: none; }
+    .solicitante-label { font-size: 11px; color: #4a5568; }
     .call-btn { display: flex; align-items: center; justify-content: center; gap: 6px; background: #0f2a1a; color: #4caf50; text-decoration: none; font-size: 12px; font-weight: 600; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #34a853; transition: background 0.15s; }
     .call-btn:hover { background: #1b3a2a; }
+
+    /* FILTROS (aba Todas) */
+    .filter-bar { background: #1a1f2e; border-radius: 8px; padding: 12px 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .filter-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; border: 1.5px solid #252b3b; background: transparent; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.15s; color: #636b7d; }
+    .filter-btn.faltando.active { border-color: #e63946; background: #3a0a0a; color: #e63946; }
+    .filter-btn.indo.active { border-color: #ffa726; background: #3a2a0a; color: #ffa726; }
+    .filter-btn.feito.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
+    .filter-btn:not(.active):hover { border-color: #4a5568; color: #8892a4; }
+
+    .vazio { font-size: 13px; color: #3a4052; text-align: center; padding: 32px 0; }
 
     /* LIGHTBOX */
     .lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 9500; }
@@ -200,6 +201,7 @@
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="nova">Nova Solicitação</button>
+    <button class="tab-btn" data-tab="todas" id="tab-todas-btn">Todas as Solicitações</button>
     <button class="tab-btn" data-tab="minhas" id="tab-minhas-btn">Minhas Solicitações</button>
   </div>
 
@@ -252,6 +254,18 @@
     </div>
   </div>
 
+  <!-- TODAS AS SOLICITAÇÕES -->
+  <div class="tab-panel" id="tab-todas">
+    <div class="container">
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn faltando active" data-filter="faltando">● <span id="count-faltando">0</span> faltando</button>
+        <button class="filter-btn indo active" data-filter="indo">● <span id="count-indo">0</span> em andamento</button>
+        <button class="filter-btn feito active" data-filter="feito">● <span id="count-feito">0</span> concluídos</button>
+      </div>
+      <div id="todas-lista"></div>
+    </div>
+  </div>
+
   <!-- MINHAS SOLICITAÇÕES -->
   <div class="tab-panel" id="tab-minhas">
     <div class="container">
@@ -294,11 +308,9 @@
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-body').innerHTML = body;
     document.getElementById('modal').classList.remove('hidden');
-    const btnSim = document.getElementById('modal-sim');
-    const btnNao = document.getElementById('modal-nao');
     const close = () => document.getElementById('modal').classList.add('hidden');
-    btnNao.onclick = close;
-    btnSim.onclick = () => { close(); onSim(); };
+    document.getElementById('modal-nao').onclick = close;
+    document.getElementById('modal-sim').onclick = () => { close(); onSim(); };
   }
 
   // ── AUTH ──
@@ -349,7 +361,7 @@
   }
 
   // ── LIGHTBOX ──
-  let lbImagens = [], lbIdx = 0, unsubMinhas = null;
+  let lbImagens = [], lbIdx = 0;
   const lightbox  = document.getElementById('lightbox');
   const lbImg     = document.getElementById('lb-img');
   const lbCounter = document.getElementById('lb-counter');
@@ -383,14 +395,80 @@
     else if (e.key === 'Escape') lbClose();
   });
 
-  function extrairTelefone(texto) {
-    const match = texto.match(/[\d]{8,}/);
-    return match ? match[0] : null;
+  // ── HELPERS ──
+  function pilotoDisplay(state) {
+    if (state.feito && state.piloto_feito) return `Piloto: ${state.piloto_feito.nome}`;
+    if (state.indo  && state.piloto_indo)  return `Indo: ${state.piloto_indo.nome}`;
+    return '';
+  }
+
+  function pilotoTel(state) {
+    if (state.feito && state.piloto_feito?.tel) return state.piloto_feito.tel.replace(/\D/g, '');
+    if (state.indo  && state.piloto_indo?.tel)  return state.piloto_indo.tel.replace(/\D/g, '');
+    return null;
+  }
+
+  function cardClass(state) {
+    if (state.drive) return 'card status-arquivado';
+    if (state.feito) return 'card status-feito';
+    if (state.indo)  return 'card status-indo';
+    return 'card status-faltando';
+  }
+
+  function cardStatus(state) {
+    if (state.feito) return 'feito';
+    if (state.indo)  return 'indo';
+    return 'faltando';
+  }
+
+  function buildCardHTML(item, opts = {}) {
+    const { showSolicitante = false, showCancel = false } = opts;
+    return `
+      <div class="card-header">
+        <div class="point-num">${String(item.num).padStart(2,'0')}</div>
+        <div class="card-title">
+          <h2>${item.rua}</h2>
+          ${item.bairro ? `<div class="bairro">${item.bairro}</div>` : ''}
+        </div>
+      </div>
+      ${item.link ? `<div class="card-maps"><a class="maps-btn" href="${item.link}" target="_blank">📍 Ver no Maps</a></div>` : ''}
+      ${(item.info_adicional || item.imagens?.length) ? `<div class="card-section">
+        ${item.info_adicional ? `<div class="card-info-label">Informações Adicionais:</div><div class="card-info">${item.info_adicional}</div>` : ''}
+        ${item.imagens?.length ? `<button class="fotos-btn" data-id="${item.id}">🖼 Ver Fotos de Referência (${item.imagens.length})</button>` : ''}
+      </div>` : ''}
+      <div class="card-section">
+        <div class="checkboxes">
+          <div class="check-btn indo-btn" id="${opts.prefix}indo-${item.id}">⏳ Indo Voar</div>
+          <div class="check-btn feito-btn" id="${opts.prefix}feito-${item.id}">✅ Vôo Concluído</div>
+        </div>
+        <div class="drive-btn-ro" id="${opts.prefix}drive-${item.id}">📁 Arquivos enviados para o Drive</div>
+        <div class="piloto-display" id="${opts.prefix}piloto-${item.id}"></div>
+        <div id="${opts.prefix}call-${item.id}"></div>
+        ${showSolicitante ? `<div class="solicitante-label">Solicitado por: ${item.criado_por || '—'}</div>` : ''}
+      </div>
+      ${showCancel ? `<div class="card-section"><button class="btn btn-danger sol-cancel-btn" data-id="${item.id}" data-rua="${item.rua}">Cancelar Solicitação</button></div>` : ''}`;
+  }
+
+  function updateCardState(prefix, id, state) {
+    document.getElementById(`${prefix}indo-${id}`)?.classList.toggle('active', !!state.indo && !state.feito);
+    document.getElementById(`${prefix}feito-${id}`)?.classList.toggle('active', !!state.feito);
+    const driveEl = document.getElementById(`${prefix}drive-${id}`);
+    if (driveEl) driveEl.classList.toggle('active', !!state.drive);
+
+    const pilotoEl = document.getElementById(`${prefix}piloto-${id}`);
+    if (pilotoEl) pilotoEl.textContent = pilotoDisplay(state);
+
+    const callEl = document.getElementById(`${prefix}call-${id}`);
+    if (callEl) {
+      const tel = pilotoTel(state);
+      callEl.innerHTML = tel ? `<a class="call-btn" href="tel:+55${tel}">📞 Ligar para o piloto</a>` : '';
+    }
   }
 
   function initApp() {
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
+    let unsubMinhas = null, unsubTodas = null;
 
     document.getElementById('header-nome').textContent = nomeOficial;
 
@@ -402,6 +480,7 @@
         btn.classList.add('active');
         document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
         if (btn.dataset.tab === 'minhas') renderMinhas();
+        if (btn.dataset.tab === 'todas')  renderTodas();
       });
     });
 
@@ -623,18 +702,15 @@
         const configObj = { num: proximoNum, rua, bairro, lat: selectedLat, lng: selectedLng, link: linkSelecionado || '', criado_por: nomeOficial, info_adicional: infoAdicional };
         if (imagens.length) configObj.imagens = imagens;
         updates[`config/${novoId}`] = configObj;
-        updates[`pontos/${novoId}`] = { indo: false, feito: false, drive: false, responsavel: '' };
+        updates[`pontos/${novoId}`] = { indo: false, feito: false, drive: false };
         updates['meta/proximo_num'] = proximoNum + 1;
         updates['meta/total_requisitados'] = (meta.total_requisitados || 0) + 1;
 
         await update(ref(db, '/'), updates);
 
-        document.getElementById('tab-minhas-btn').textContent = 'Minhas Solicitações';
-
         statusEl.textContent = `✓ Solicitação ${String(proximoNum).padStart(2,'0')} enviada!`;
         statusEl.className = 'ok';
 
-        // Reset form
         document.getElementById('link-input').value = '';
         document.getElementById('endereco-input').value = '';
         document.getElementById('info-input').value = '';
@@ -654,12 +730,92 @@
       }
     }
 
-    // ── MINHAS SOLICITAÇÕES ──
+    // ── TODAS AS SOLICITAÇÕES ──
+    const filtros = { faltando: true, indo: true, feito: true };
 
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const f = btn.dataset.filter;
+        filtros[f] = !filtros[f];
+        btn.classList.toggle('active', filtros[f]);
+        applyFilter();
+      });
+    });
+
+    function applyFilter() {
+      document.querySelectorAll('#todas-lista .card').forEach(card => {
+        const status = card.dataset.status;
+        card.classList.toggle('hidden-by-filter', !filtros[status]);
+      });
+    }
+
+    async function renderTodas() {
+      if (unsubTodas) { unsubTodas(); unsubTodas = null; }
+
+      const lista = document.getElementById('todas-lista');
+      lista.innerHTML = '<div class="vazio">Carregando...</div>';
+
+      const snap = await get(ref(db, 'config'));
+      const all  = snap.val() || {};
+      const todos = Object.entries(all)
+        .map(([id, d]) => ({ id, ...d }))
+        .sort((a, b) => a.num - b.num);
+
+      if (todos.length === 0) {
+        lista.innerHTML = '<div class="vazio">Nenhuma solicitação ainda.</div>';
+        return;
+      }
+
+      const imgMap = {};
+      todos.forEach(item => { if (item.imagens?.length) imgMap[item.id] = item.imagens; });
+
+      lista.innerHTML = '';
+      todos.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card status-faltando';
+        card.id = `tsol-${item.id}`;
+        card.dataset.status = 'faltando';
+        card.innerHTML = buildCardHTML(item, { prefix: 'tsol-', showSolicitante: true, showCancel: false });
+        lista.appendChild(card);
+      });
+
+      lista.querySelectorAll('.fotos-btn').forEach(btn => {
+        btn.addEventListener('click', () => lbOpen(btn.dataset.id, imgMap));
+      });
+
+      unsubTodas = onValue(ref(db, 'pontos'), snap => {
+        const data = snap.val() || {};
+        let cFaltando = 0, cIndo = 0, cFeito = 0;
+
+        todos.forEach(item => {
+          const state  = data[item.id] || {};
+          const status = cardStatus(state);
+          const card   = document.getElementById(`tsol-${item.id}`);
+          if (card) {
+            card.className = cardClass(state);
+            card.dataset.status = status;
+          }
+          updateCardState('tsol-', item.id, state);
+          if (status === 'faltando') cFaltando++;
+          else if (status === 'indo') cIndo++;
+          else if (status === 'feito') cFeito++;
+        });
+
+        document.getElementById('count-faltando').textContent = cFaltando;
+        document.getElementById('count-indo').textContent = cIndo;
+        document.getElementById('count-feito').textContent = cFeito;
+        applyFilter();
+
+        const tabBtn = document.getElementById('tab-todas-btn');
+        tabBtn.textContent = `Todas as Solicitações (${todos.length})`;
+      });
+    }
+
+    // ── MINHAS SOLICITAÇÕES ──
     async function renderMinhas() {
       if (unsubMinhas) { unsubMinhas(); unsubMinhas = null; }
       const lista = document.getElementById('minhas-lista');
-      lista.innerHTML = '<div class="conf-vazia" style="padding:32px 0">Carregando...</div>';
+      lista.innerHTML = '<div class="vazio">Carregando...</div>';
 
       const snap = await get(ref(db, 'config'));
       const all  = snap.val() || {};
@@ -672,7 +828,7 @@
       tabBtn.textContent = sols.length > 0 ? `Minhas Solicitações (${sols.length})` : 'Minhas Solicitações';
 
       if (sols.length === 0) {
-        lista.innerHTML = '<div style="text-align:center;padding:32px 0;color:#3a4052;font-size:13px;">Nenhuma solicitação encontrada.</div>';
+        lista.innerHTML = '<div class="vazio">Nenhuma solicitação encontrada.</div>';
         return;
       }
 
@@ -682,37 +838,9 @@
       lista.innerHTML = '';
       sols.forEach(sol => {
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card status-faltando';
         card.id = `msol-${sol.id}`;
-        card.style.marginBottom = '16px';
-        card.innerHTML = `
-          <div class="card-header">
-            <div class="point-num">${String(sol.num).padStart(2,'0')}</div>
-            <div class="card-title">
-              <h2>${sol.rua}</h2>
-              ${sol.bairro ? `<div class="bairro">${sol.bairro}</div>` : ''}
-            </div>
-          </div>
-          ${sol.link ? `<div class="card-maps"><a class="maps-btn" href="${sol.link}" target="_blank">📍 Ver no Maps</a></div>` : ''}
-          ${(sol.info_adicional || sol.imagens?.length) ? `<div class="card-section">
-            ${sol.info_adicional ? `<div class="card-info-label">Informações Adicionais:</div><div class="card-info">${sol.info_adicional}</div>` : ''}
-            ${sol.imagens?.length ? `<button class="fotos-btn" data-id="${sol.id}">🖼 Ver Fotos de Referência (${sol.imagens.length})</button>` : ''}
-          </div>` : ''}
-          <div class="card-section">
-            <div class="checkboxes">
-              <div class="check-btn indo-btn readonly" id="msol-indo-${sol.id}">⏳ Indo Voar</div>
-              <div class="check-btn feito-btn readonly" id="msol-feito-${sol.id}">✅ Vôo Concluído</div>
-            </div>
-            <div class="drive-btn readonly" id="msol-drive-${sol.id}">📁 Arquivos enviados para o Drive</div>
-            <div class="responsavel-area">
-              <div class="responsavel-label">Piloto(s) responsável</div>
-              <div class="responsavel-display" id="msol-resp-${sol.id}"></div>
-              <div id="msol-call-${sol.id}"></div>
-            </div>
-          </div>
-          <div class="card-section">
-            <button class="btn btn-danger sol-cancel-btn" data-id="${sol.id}" data-rua="${sol.rua}">Cancelar Solicitação</button>
-          </div>`;
+        card.innerHTML = buildCardHTML(sol, { prefix: 'msol-', showSolicitante: false, showCancel: true });
         lista.appendChild(card);
       });
 
@@ -730,36 +858,13 @@
         btn.addEventListener('click', () => lbOpen(btn.dataset.id, imgMap));
       });
 
-      unsubMinhas = onValue(ref(db, 'pontos'), pontoSnap => {
-        const data = pontoSnap.val() || {};
+      unsubMinhas = onValue(ref(db, 'pontos'), snap => {
+        const data = snap.val() || {};
         sols.forEach(sol => {
           const state = data[sol.id] || {};
-          const indo  = !!state.indo;
-          const feito = !!state.feito;
-          const drive = !!state.drive;
-
-          document.getElementById(`msol-indo-${sol.id}`)?.classList.toggle('active', indo && !feito);
-          document.getElementById(`msol-feito-${sol.id}`)?.classList.toggle('active', feito);
-          const driveEl = document.getElementById(`msol-drive-${sol.id}`);
-          if (driveEl) driveEl.classList.toggle('active', drive);
-
-          const respEl = document.getElementById(`msol-resp-${sol.id}`);
-          if (respEl) {
-            respEl.textContent = state.responsavel || '';
-            const callEl = document.getElementById(`msol-call-${sol.id}`);
-            if (callEl) {
-              const tel = state.responsavel ? extrairTelefone(state.responsavel) : null;
-              callEl.innerHTML = tel ? `<a class="call-btn" href="tel:+55${tel}">📞 Ligar para o piloto</a>` : '';
-            }
-          }
-
-          const card = document.getElementById(`msol-${sol.id}`);
-          if (card) {
-            if (drive)       card.className = 'card status-arquivado';
-            else if (feito)  card.className = 'card status-feito';
-            else if (indo)   card.className = 'card status-indo';
-            else             card.className = 'card';
-          }
+          const card  = document.getElementById(`msol-${sol.id}`);
+          if (card) card.className = cardClass(state);
+          updateCardState('msol-', sol.id, state);
         });
       });
     }
@@ -768,14 +873,11 @@
       try {
         const metaSnap = await get(ref(db, 'meta'));
         const meta = metaSnap.val() || {};
-
-        const updates = {};
-        updates[`config/${id}`] = null;
-        updates[`pontos/${id}`] = null;
-        updates['meta/total_requisitados'] = Math.max(0, (meta.total_requisitados || 1) - 1);
-
-        await update(ref(db, '/'), updates);
-
+        await update(ref(db, '/'), {
+          [`config/${id}`]: null,
+          [`pontos/${id}`]: null,
+          'meta/total_requisitados': Math.max(0, (meta.total_requisitados || 1) - 1)
+        });
         renderMinhas();
       } catch {
         alert('Erro ao cancelar. Tente novamente.');
