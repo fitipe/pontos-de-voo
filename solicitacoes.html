@@ -945,12 +945,24 @@
 
     async function cancelarSolicitacao(id) {
       try {
-        const metaSnap = await get(ref(db, 'meta'));
-        const meta = metaSnap.val() || {};
+        const [metaSnap, configSnap] = await Promise.all([
+          get(ref(db, 'meta')),
+          get(ref(db, 'config'))
+        ]);
+        const meta   = metaSnap.val()   || {};
+        const config = configSnap.val() || {};
+
+        // Recalcula proximo_num a partir do maior num restante (excluindo o que está sendo deletado)
+        const nums = Object.entries(config)
+          .filter(([k]) => k !== id)
+          .map(([, v]) => v.num || 0);
+        const novoProximoNum = nums.length > 0 ? Math.max(...nums) + 1 : 18;
+
         await update(ref(db, '/'), {
           [`config/${id}`]: null,
           [`pontos/${id}`]: null,
-          'meta/total_requisitados': Math.max(0, (meta.total_requisitados || 1) - 1)
+          'meta/total_requisitados': Math.max(0, (meta.total_requisitados || 1) - 1),
+          'meta/proximo_num': novoProximoNum
         });
         renderMinhas();
       } catch {
