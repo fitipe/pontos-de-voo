@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pontos de Voo — JF</title>
-  <script>(function(){var V='20260304-3';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
+  <script>(function(){var V='20260309-1';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -143,6 +143,20 @@
     .drive-btn:not(.active):not(.locked):hover { border-color: #34a853; color: #34a853; }
     .drive-btn.active { border-color: #34a853; background: #0f2a1a; color: #34a853; cursor: default; }
     .drive-btn.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+
+    .drive-form { display: none; flex-direction: column; gap: 8px; }
+    .drive-form.visible { display: flex; }
+    .drive-form input { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #e8eaf0; outline: none; width: 100%; transition: border-color 0.15s; }
+    .drive-form input:focus { border-color: #4a5568; }
+    .drive-form input::placeholder { color: #3a4052; }
+    .drive-form .drive-confirm-btn { width: 100%; padding: 9px 10px; border-radius: 6px; border: none; background: #34a853; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .drive-form .drive-confirm-btn:hover { background: #2d9248; }
+    .drive-form .drive-confirm-btn:disabled { background: #1b3a1f; color: #4a5568; cursor: not-allowed; }
+    .drive-form .drive-cancel-btn { width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+    .drive-form .drive-cancel-btn:hover { background: #252b3b; }
+    .drive-link-display { font-size: 12px; }
+    .drive-link-display a { color: #60a5fa; text-decoration: none; word-break: break-all; }
+    .drive-link-display a:hover { text-decoration: underline; }
 
     .piloto-display { font-size: 12px; color: #8892a4; padding: 2px 0; min-height: 0; }
 
@@ -462,6 +476,12 @@
           </div>
           <button class="desistir-btn" data-id="${ponto.id}">↩ Desistir</button>
           <button class="drive-btn" data-id="${ponto.id}">📁 Arquivos enviados para o Drive</button>
+          <div class="drive-form" id="drive-form-${ponto.id}">
+            <input type="text" placeholder="Cole o link da pasta no Drive" id="drive-link-${ponto.id}">
+            <button class="drive-confirm-btn" data-id="${ponto.id}">Confirmar envio</button>
+            <button class="drive-cancel-btn" data-id="${ponto.id}">Cancelar</button>
+          </div>
+          <div class="drive-link-display" id="drive-link-display-${ponto.id}"></div>
           <div class="piloto-display" id="piloto-${ponto.id}"></div>
         </div>`;
       container.appendChild(card);
@@ -575,20 +595,46 @@
       });
     });
 
-    // Botão Drive → confirmação
+    // Botão Drive → abre formulário de link
     document.querySelectorAll('.drive-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         if (btn.classList.contains('active') || btn.classList.contains('locked')) return;
-        const id   = btn.dataset.id;
+        const id = btn.dataset.id;
+        const form = document.getElementById(`drive-form-${id}`);
+        form.classList.add('visible');
+        btn.style.display = 'none';
+        document.getElementById(`drive-link-${id}`).focus();
+      });
+    });
+
+    // Confirmar envio com link do Drive
+    document.querySelectorAll('.drive-confirm-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const linkInput = document.getElementById(`drive-link-${id}`);
+        const link = linkInput.value.trim();
+        if (!link) { linkInput.style.borderColor = '#e63946'; setTimeout(() => linkInput.style.borderColor = '', 600); return; }
         const card = document.getElementById(`card-${id}`);
         const rua  = card.querySelector('h2').textContent;
         showModal(
           'Confirmar envio ao Drive?',
           `<strong>${rua}</strong>Você confirma que realizou o vôo e enviou os arquivos para o Drive com sucesso?`,
           () => {
-            update(ref(db, '/'), { [`pontos/${id}/drive`]: true });
+            update(ref(db, '/'), {
+              [`pontos/${id}/drive`]: true,
+              [`pontos/${id}/drive_link`]: link
+            });
           }
         );
+      });
+    });
+
+    // Cancelar formulário de link
+    document.querySelectorAll('.drive-cancel-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        document.getElementById(`drive-form-${id}`).classList.remove('visible');
+        document.querySelector(`.drive-btn[data-id="${id}"]`).style.display = '';
       });
     });
 
@@ -621,6 +667,15 @@
         if (driveBtn) {
           driveBtn.classList.toggle('active', drive);
           driveBtn.classList.toggle('locked', !feito && !drive);
+          if (drive) {
+            driveBtn.style.display = '';
+            document.getElementById(`drive-form-${ponto.id}`)?.classList.remove('visible');
+          }
+        }
+        const driveLinkDisplay = document.getElementById(`drive-link-display-${ponto.id}`);
+        if (driveLinkDisplay) {
+          const driveLink = state.drive_link || '';
+          driveLinkDisplay.innerHTML = driveLink ? `<a href="${driveLink}" target="_blank">📂 Ver pasta no Drive</a>` : '';
         }
 
         if (feitoBtn) {

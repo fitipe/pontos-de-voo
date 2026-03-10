@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solicitação de Vôo</title>
-  <script>(function(){var V='20260304-4';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
+  <script>(function(){var V='20260309-1';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -115,6 +115,10 @@
     .check-btn.feito-btn.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
     .drive-btn-ro { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #252b3b; background: transparent; color: #8892a4; font-size: 12px; font-weight: 600; cursor: default; pointer-events: none; }
     .drive-btn-ro.active { border-color: #34a853; background: #0f2a1a; color: #34a853; }
+    .drive-link-display { font-size: 12px; }
+    .drive-link-display a { color: #60a5fa; text-decoration: none; word-break: break-all; }
+    .drive-link-display a:hover { text-decoration: underline; }
+    .drive-link-display:empty { display: none; }
     .piloto-display { font-size: 13px; color: #8892a4; }
     .piloto-display:empty { display: none; }
     .solicitante-label { font-size: 11px; color: #4a5568; }
@@ -454,6 +458,7 @@
           <div class="check-btn feito-btn" id="${prefix}feito-${item.id}">✅ Vôo Concluído</div>
         </div>
         <div class="drive-btn-ro" id="${prefix}drive-${item.id}">📁 Arquivos enviados para o Drive</div>
+        <div class="drive-link-display" id="${prefix}drivelink-${item.id}"></div>
         <div class="piloto-display" id="${prefix}piloto-${item.id}"></div>
         <div id="${prefix}call-${item.id}"></div>
         ${showSolicitante ? `<div class="solicitante-label">Solicitado por: ${item.criado_por || '—'}</div>` : ''}
@@ -466,6 +471,11 @@
     document.getElementById(`${prefix}feito-${id}`)?.classList.toggle('active', !!state.feito);
     const driveEl = document.getElementById(`${prefix}drive-${id}`);
     if (driveEl) driveEl.classList.toggle('active', !!state.drive);
+    const driveLinkEl = document.getElementById(`${prefix}drivelink-${id}`);
+    if (driveLinkEl) {
+      const driveLink = state.drive_link || '';
+      driveLinkEl.innerHTML = driveLink ? `<a href="${driveLink}" target="_blank">📂 Ver pasta no Drive</a>` : '';
+    }
     const pilotoEl = document.getElementById(`${prefix}piloto-${id}`);
     const callEl = document.getElementById(`${prefix}call-${id}`);
     if (callEl) callEl.textContent = '';
