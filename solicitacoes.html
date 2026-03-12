@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solicitação de Vôo</title>
-  <script>(function(){var V='20260312-1';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
+  <script>(function(){var V='20260312-2';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -181,6 +181,11 @@
       <input id="nome-input" type="text" placeholder="Nome">
     </div>
     <div class="senha-field">
+      <label>PIN pessoal (4 dígitos)</label>
+      <input id="pin-input" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="••••" style="letter-spacing:6px; text-align:center; font-size:18px;">
+      <div style="font-size:11px; color:#636b7d; margin-top:-4px;">Escolha um PIN e use sempre o mesmo para acessar suas solicitações</div>
+    </div>
+    <div class="senha-field">
       <label>Senha</label>
       <input id="senha-input" type="password" autocomplete="off" placeholder="••••••••">
       <div id="senha-error"></div>
@@ -326,12 +331,16 @@
   }
 
   // ── AUTH ──
+  let pinOficial = null;
+
   function checkAuth() {
     const auth = sessionStorage.getItem('auth_req');
     const nome = sessionStorage.getItem('nome_oficial');
-    if (auth === '1' && nome) {
+    const pin  = sessionStorage.getItem('pin_oficial');
+    if (auth === '1' && nome && pin) {
       document.getElementById('senha-screen').classList.add('hidden');
       document.getElementById('app').classList.add('visible');
+      pinOficial = pin;
       return nome;
     }
     return null;
@@ -342,12 +351,21 @@
   if (!nomeOficial) {
     const senhaInput = document.getElementById('senha-input');
     const nomeInput  = document.getElementById('nome-input');
+    const pinInput   = document.getElementById('pin-input');
     const erro       = document.getElementById('senha-error');
 
     function tentarEntrar() {
       const nome  = nomeInput.value.trim();
+      const pin   = pinInput.value.trim();
       const senha = senhaInput.value;
       if (!nome) { nomeInput.classList.add('error'); setTimeout(() => nomeInput.classList.remove('error'), 400); return; }
+      if (!/^\d{4}$/.test(pin)) {
+        erro.textContent = 'PIN deve ter 4 dígitos.';
+        pinInput.classList.add('error');
+        setTimeout(() => pinInput.classList.remove('error'), 400);
+        pinInput.focus();
+        return;
+      }
       if (senha !== SENHA) {
         erro.textContent = 'Senha incorreta.';
         senhaInput.classList.add('error');
@@ -358,7 +376,9 @@
       }
       sessionStorage.setItem('auth_req', '1');
       sessionStorage.setItem('nome_oficial', nome);
+      sessionStorage.setItem('pin_oficial', pin);
       nomeOficial = nome;
+      pinOficial = pin;
       document.getElementById('senha-screen').classList.add('hidden');
       document.getElementById('app').classList.add('visible');
       initApp();
@@ -366,7 +386,8 @@
 
     document.getElementById('senha-btn').addEventListener('click', tentarEntrar);
     senhaInput.addEventListener('keydown', e => { if (e.key === 'Enter') tentarEntrar(); });
-    nomeInput.addEventListener('keydown',  e => { if (e.key === 'Enter') senhaInput.focus(); });
+    pinInput.addEventListener('keydown', e => { if (e.key === 'Enter') senhaInput.focus(); });
+    nomeInput.addEventListener('keydown',  e => { if (e.key === 'Enter') pinInput.focus(); });
   } else {
     initApp();
   }
@@ -757,7 +778,7 @@
           num: proximoNum, rua: partes[0] || selectedEndereco,
           bairro: partes[2] || partes[1] || '',
           lat: selectedLat, lng: selectedLng,
-          link: linkSelecionado || '', criado_por: nomeOficial,
+          link: linkSelecionado || '', criado_por: nomeOficial, criado_por_pin: pinOficial,
           info_adicional: document.getElementById('info-input').value.trim()
         };
         const imagens = imagensBase64.filter(Boolean);
@@ -882,7 +903,7 @@
       const snap = await get(ref(db, 'config'));
       const all  = snap.val() || {};
       const sols = Object.entries(all)
-        .filter(([, d]) => d.criado_por === nomeOficial)
+        .filter(([, d]) => d.criado_por === nomeOficial && d.criado_por_pin === pinOficial)
         .map(([id, d]) => ({ id, ...d }))
         .sort((a, b) => a.num - b.num);
 
