@@ -133,7 +133,7 @@
     .check-btn.feito-btn:not(.active):not(.locked):hover { border-color: #4caf50; color: #4caf50; }
     .check-btn.indo-btn.active { border-color: #ffa726; background: #3a2a0a; color: #ffa726; }
     .check-btn.feito-btn.active { border-color: #4caf50; background: #1b3a1f; color: #4caf50; }
-    .check-btn.feito-btn.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+    .check-btn.feito-btn.locked, .check-btn.indo-btn.locked { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
 
     .desistir-btn { display: none; width: 100%; padding: 7px 10px; border-radius: 6px; border: 1.5px solid #ffa726; background: transparent; color: #ffa726; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
     .desistir-btn.visible { display: block; }
@@ -659,7 +659,10 @@
         const driveBtn  = document.querySelector(`.drive-btn[data-id="${ponto.id}"]`);
         const pilotoEl  = document.getElementById(`piloto-${ponto.id}`);
 
-        if (indoBtn)  indoBtn.classList.toggle('active', indo);
+        if (indoBtn) {
+          indoBtn.classList.toggle('active', indo);
+          indoBtn.classList.toggle('locked', feito || drive);
+        }
         if (driveBtn) {
           driveBtn.classList.toggle('active', drive);
           driveBtn.classList.toggle('locked', !feito && !drive);
