@@ -677,9 +677,9 @@
 
         if (feitoBtn) {
           feitoBtn.classList.toggle('active', feito);
-          // Travar feito se este piloto não foi quem clicou Indo
+          // Travar feito se: não é o piloto que clicou Indo, OU drive já confirmado
           const euEstouIndo = indo && pilotoIndo && pilotoIndo.tel === pilotoLogado.tel;
-          feitoBtn.classList.toggle('locked', !feito && !euEstouIndo);
+          feitoBtn.classList.toggle('locked', drive || (!feito && !euEstouIndo));
         }
 
         // Desistir: só visível para o piloto que clicou indo, antes de feito
