@@ -208,6 +208,7 @@
 <div id="app">
   <header>
     <h1>Solicitação de Vôo <span id="header-nome">Defesa Civil JF</span></h1>
+    <div id="header-pin" style="font-size:11px; color:#636b7d; margin-top:2px;"></div>
     <a class="btn-pilotos" href="index.html">Ir para a página de Pontos de Vôo,<br>usada pelos pilotos</a>
   </header>
 
@@ -551,6 +552,7 @@
     const filtrosMinhas = { faltando: true, indo: true, feito: true };
 
     document.getElementById('header-nome').textContent = nomeOficial;
+    document.getElementById('header-pin').textContent = `PIN: ${pinOficial}`;
 
     // ── TABS ──
     document.querySelectorAll('.tab-btn').forEach(btn => {
