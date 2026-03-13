@@ -308,7 +308,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  import { getDatabase, ref, get, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
@@ -457,6 +457,15 @@
     return null;
   }
 
+  function formatTimestamp(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    const pad = n => String(n).padStart(2, '0');
+    // UTC-3 (Brasília)
+    const brt = new Date(d.getTime() - 3 * 60 * 60 * 1000);
+    return `${pad(brt.getUTCDate())}/${pad(brt.getUTCMonth() + 1)}/${brt.getUTCFullYear()} ${pad(brt.getUTCHours())}:${pad(brt.getUTCMinutes())} UTC-3`;
+  }
+
   function buildCardHTML(item, opts = {}) {
     const { prefix = '', showSolicitante = false, showCancel = false } = opts;
     return `
@@ -480,7 +489,8 @@
         <div class="drive-btn-ro" id="${prefix}drive-${item.id}">📁 Arquivos enviados para o Drive</div>
         <div class="piloto-display" id="${prefix}piloto-${item.id}"></div>
         <div id="${prefix}call-${item.id}"></div>
-        ${showSolicitante ? `<div class="solicitante-label">Solicitado por: ${item.criado_por || '—'}</div>` : ''}
+        ${showSolicitante ? `<div class="solicitante-label">Solicitado por: ${item.criado_por || '—'}${item.criado_em ? ` — ${formatTimestamp(item.criado_em)}` : ''}</div>` : ''}
+        ${!showSolicitante && item.criado_em ? `<div class="solicitante-label">${formatTimestamp(item.criado_em)}</div>` : ''}
       </div>
       ${showCancel ? `<div class="card-section"><button class="btn btn-danger sol-cancel-btn" data-id="${item.id}" data-rua="${item.rua}">Cancelar Solicitação</button></div>` : ''}`;
   }
@@ -782,7 +792,8 @@
           bairro: partes[2] || partes[1] || '',
           lat: selectedLat, lng: selectedLng,
           link: linkSelecionado || '', criado_por: nomeOficial, criado_por_pin: pinOficial,
-          info_adicional: document.getElementById('info-input').value.trim()
+          info_adicional: document.getElementById('info-input').value.trim(),
+          criado_em: serverTimestamp()
         };
         const imagens = imagensBase64.filter(Boolean);
         if (imagens.length) configObj.imagens = imagens;
