@@ -196,6 +196,15 @@
     .msg-send-btn:disabled { background: #1a2a3a; color: #3a4052; cursor: not-allowed; }
     .msg-cancel-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #252b3b; background: transparent; color: #636b7d; font-size: 12px; font-weight: 600; cursor: pointer; }
     .msg-cancel-btn:hover { background: #252b3b; }
+    .msg-upload-area { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .msg-upload-btn { background: none; border: 1px dashed #252b3b; border-radius: 6px; color: #636b7d; font-size: 11px; padding: 6px 10px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+    .msg-upload-btn:hover { border-color: #4a5568; color: #8892a4; }
+    .msg-thumbs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .msg-thumb { position: relative; width: 48px; height: 48px; }
+    .msg-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+    .msg-thumb-rm { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: #e63946; border: none; border-radius: 50%; color: #fff; font-size: 10px; cursor: pointer; line-height: 16px; text-align: center; padding: 0; }
+    .msg-img-grid { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .msg-img-grid img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -526,6 +535,11 @@
         <button class="msg-add-btn" id="${prefix}msg-add-${item.id}">💬 Adicionar comentário</button>
         <div class="msg-form" id="${prefix}msg-form-${item.id}">
           <textarea placeholder="Escreva seu comentário..." id="${prefix}msg-text-${item.id}"></textarea>
+          <div class="msg-upload-area">
+            <input type="file" accept="image/*" multiple style="display:none" id="${prefix}msg-file-${item.id}">
+            <button class="msg-upload-btn" id="${prefix}msg-upload-btn-${item.id}">📎 Imagens (máx 3)</button>
+            <div class="msg-thumbs" id="${prefix}msg-thumbs-${item.id}"></div>
+          </div>
           <div class="msg-form-btns">
             <button class="msg-send-btn" id="${prefix}msg-send-${item.id}" disabled>Enviar</button>
             <button class="msg-cancel-btn" id="${prefix}msg-cancel-${item.id}">Cancelar</button>
@@ -865,6 +879,31 @@
     }
 
     // ── MENSAGENS ──
+    const MSG_MAX_IMGS = 3;
+    const MSG_MAX_SIZE = 5 * 1024 * 1024;
+
+    function resizeMsgImg(file, maxDim, quality) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = new Image();
+          img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+              else { w = Math.round(w * maxDim / h); h = maxDim; }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
     function formatMsgTime(ts) {
       if (!ts) return '';
       const d = new Date(ts);
@@ -889,9 +928,11 @@
         actions += `<button class="msg-action-btn editar" data-ponto="${pontoId}" data-msg="${msg.id}" data-prefix="${prefix}">Editar</button>`;
       }
 
+      const imgs = msg.imagens?.length ? `<div class="msg-img-grid">${msg.imagens.map(src => `<img src="${src}" onclick="window.open(this.src)">`).join('')}</div>` : '';
       return `<div class="msg-item ${tipo} ${pendente ? 'msg-pendente' : ''}" id="${prefix}msg-${msg.id}">
         <div class="msg-autor">${autorInfo}${pendente ? ' <span class="msg-pendente-tag">· pendente aprovação</span>' : ''}</div>
-        <div class="msg-texto">${msg.texto.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        ${msg.texto ? `<div class="msg-texto">${msg.texto.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>` : ''}
+        ${imgs}
         <div class="msg-data">${formatMsgTime(msg.timestamp)}</div>
         ${actions ? `<div class="msg-actions">${actions}</div>` : ''}
       </div>`;
@@ -903,34 +944,81 @@
       const textarea = document.getElementById(`${prefix}msg-text-${pontoId}`);
       const sendBtn = document.getElementById(`${prefix}msg-send-${pontoId}`);
       const cancelBtn = document.getElementById(`${prefix}msg-cancel-${pontoId}`);
+      const fileInput = document.getElementById(`${prefix}msg-file-${pontoId}`);
+      const uploadBtn = document.getElementById(`${prefix}msg-upload-btn-${pontoId}`);
+      const thumbsEl = document.getElementById(`${prefix}msg-thumbs-${pontoId}`);
       if (!addBtn || !form) return;
+      let msgImgs = [];
+
+      function updateSendState() {
+        sendBtn.disabled = !textarea.value.trim() && msgImgs.filter(Boolean).length === 0;
+      }
+
+      function renderThumbs() {
+        thumbsEl.innerHTML = '';
+        msgImgs.forEach((b64, i) => {
+          if (!b64) return;
+          const t = document.createElement('div');
+          t.className = 'msg-thumb';
+          t.innerHTML = `<img src="${b64}"><button class="msg-thumb-rm" data-idx="${i}">×</button>`;
+          t.querySelector('button').addEventListener('click', () => { msgImgs[i] = null; renderThumbs(); updateSendState(); });
+          thumbsEl.appendChild(t);
+        });
+        uploadBtn.textContent = msgImgs.filter(Boolean).length >= MSG_MAX_IMGS ? '📎 Limite atingido' : `📎 Imagens (${msgImgs.filter(Boolean).length}/${MSG_MAX_IMGS})`;
+      }
 
       addBtn.addEventListener('click', () => {
         form.classList.add('visible');
         addBtn.style.display = 'none';
         textarea.focus();
       });
-      textarea.addEventListener('input', () => { sendBtn.disabled = !textarea.value.trim(); });
+      textarea.addEventListener('input', updateSendState);
+
+      uploadBtn.addEventListener('click', () => {
+        if (msgImgs.filter(Boolean).length >= MSG_MAX_IMGS) return;
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', async e => {
+        const restam = MSG_MAX_IMGS - msgImgs.filter(Boolean).length;
+        for (const file of Array.from(e.target.files).slice(0, restam)) {
+          if (file.size > MSG_MAX_SIZE) { alert(`${file.name} excede 5MB.`); continue; }
+          const b64 = await resizeMsgImg(file, 1200, 0.8);
+          msgImgs.push(b64);
+        }
+        e.target.value = '';
+        renderThumbs();
+        updateSendState();
+      });
+
       cancelBtn.addEventListener('click', () => {
         form.classList.remove('visible');
         addBtn.style.display = '';
         textarea.value = '';
+        msgImgs = [];
+        renderThumbs();
         sendBtn.disabled = true;
       });
+
       sendBtn.addEventListener('click', async () => {
         const texto = textarea.value.trim();
-        if (!texto) return;
+        const imagens = msgImgs.filter(Boolean);
+        if (!texto && !imagens.length) return;
         sendBtn.disabled = true;
         try {
-          await push(ref(db, `mensagens/${pontoId}`), {
+          const msgData = {
             autor_nome: nomeOficial,
             autor_pin: pinOficial,
             texto,
             origem: 'solicitante',
             aprovado_pilotos: true,
             timestamp: serverTimestamp()
-          });
+          };
+          if (imagens.length) msgData.imagens = imagens;
+          await push(ref(db, `mensagens/${pontoId}`), msgData);
           textarea.value = '';
+          msgImgs = [];
+          renderThumbs();
           form.classList.remove('visible');
           addBtn.style.display = '';
         } catch { sendBtn.disabled = false; }
