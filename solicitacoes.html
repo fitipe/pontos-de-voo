@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solicitação de Vôo</title>
-  <script>(function(){var V='20260312-2';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
+  <script>(function(){var V='20260331-2';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -167,6 +167,35 @@
     .upload-thumb { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
     .upload-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; cursor: zoom-in; }
     .upload-thumb-remove { position: absolute; top: -5px; right: -5px; width: 18px; height: 18px; background: #e63946; border: none; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center; padding: 0; line-height: 18px; }
+
+    /* MENSAGENS */
+    .msgs-section { padding: 12px 16px; border-top: 1px solid #2d3448; display: flex; flex-direction: column; gap: 8px; }
+    .msg-item { background: #0f1117; border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; position: relative; }
+    .msg-item.msg-solicitante { border-left: 3px solid #60a5fa; }
+    .msg-item.msg-piloto { border-left: 3px solid #ffa726; }
+    .msg-item.msg-pendente { opacity: 0.6; }
+    .msg-autor { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #636b7d; }
+    .msg-texto { font-size: 12px; color: #a0aec0; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+    .msg-data { font-size: 10px; color: #4a5568; }
+    .msg-actions { display: flex; gap: 6px; margin-top: 4px; }
+    .msg-action-btn { background: none; border: 1px solid #252b3b; border-radius: 4px; color: #636b7d; font-size: 10px; font-weight: 600; padding: 3px 8px; cursor: pointer; transition: all 0.15s; }
+    .msg-action-btn:hover { border-color: #4a5568; color: #8892a4; }
+    .msg-action-btn.aprovar:hover { border-color: #4caf50; color: #4caf50; }
+    .msg-action-btn.aprovar.aprovado { border-color: #4caf50; color: #4caf50; background: #0f2a1a; cursor: default; }
+    .msg-action-btn.editar:hover { border-color: #60a5fa; color: #60a5fa; }
+    .msg-pendente-tag { font-size: 9px; color: #ffa726; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .msg-add-btn { background: none; border: 1px solid #252b3b; border-radius: 6px; color: #636b7d; font-size: 11px; font-weight: 600; padding: 6px 10px; cursor: pointer; transition: all 0.15s; width: 100%; }
+    .msg-add-btn:hover { border-color: #4a5568; color: #8892a4; }
+    .msg-form { display: none; flex-direction: column; gap: 8px; }
+    .msg-form.visible { display: flex; }
+    .msg-form textarea { background: #0f1117; border: 1.5px solid #252b3b; border-radius: 6px; padding: 9px 12px; font-size: 13px; color: #e8eaf0; outline: none; width: 100%; resize: vertical; font-family: inherit; min-height: 60px; transition: border-color 0.15s; }
+    .msg-form textarea:focus { border-color: #4a5568; }
+    .msg-form-btns { display: flex; gap: 8px; }
+    .msg-send-btn { flex: 1; padding: 8px; border-radius: 6px; border: none; background: #1e3a5f; color: #60a5fa; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .msg-send-btn:hover { background: #264b7a; }
+    .msg-send-btn:disabled { background: #1a2a3a; color: #3a4052; cursor: not-allowed; }
+    .msg-cancel-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #252b3b; background: transparent; color: #636b7d; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .msg-cancel-btn:hover { background: #252b3b; }
   </style>
 </head>
 <body>
@@ -307,7 +336,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-  import { getDatabase, ref, get, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+  import { getDatabase, ref, get, update, onValue, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAfybtRkZVFfWAJdZVEqHCHPJXw9Kmz6cA",
@@ -491,7 +520,18 @@
         ${showSolicitante ? `<div class="solicitante-label">Solicitado por: ${item.criado_por || '—'}${item.criado_em ? ` — ${formatTimestamp(item.criado_em)}` : ''}</div>` : ''}
         ${!showSolicitante && item.criado_em ? `<div class="solicitante-label">${formatTimestamp(item.criado_em)}</div>` : ''}
       </div>
-      ${showCancel ? `<div class="card-section"><button class="btn btn-danger sol-cancel-btn" data-id="${item.id}" data-rua="${item.rua}">Cancelar Solicitação</button></div>` : ''}`;
+      ${showCancel ? `<div class="card-section"><button class="btn btn-danger sol-cancel-btn" data-id="${item.id}" data-rua="${item.rua}">Cancelar Solicitação</button></div>` : ''}
+      <div class="msgs-section" id="${prefix}msgs-section-${item.id}">
+        <div id="${prefix}msgs-list-${item.id}"></div>
+        <button class="msg-add-btn" id="${prefix}msg-add-${item.id}">💬 Adicionar comentário</button>
+        <div class="msg-form" id="${prefix}msg-form-${item.id}">
+          <textarea placeholder="Escreva seu comentário..." id="${prefix}msg-text-${item.id}"></textarea>
+          <div class="msg-form-btns">
+            <button class="msg-send-btn" id="${prefix}msg-send-${item.id}" disabled>Enviar</button>
+            <button class="msg-cancel-btn" id="${prefix}msg-cancel-${item.id}">Cancelar</button>
+          </div>
+        </div>
+      </div>`;
   }
 
   function updateCardState(prefix, id, state) {
@@ -824,6 +864,138 @@
       }
     }
 
+    // ── MENSAGENS ──
+    function formatMsgTime(ts) {
+      if (!ts) return '';
+      const d = new Date(ts);
+      const pad = n => String(n).padStart(2, '0');
+      const brt = new Date(d.getTime() - 3 * 60 * 60 * 1000);
+      return `${pad(brt.getUTCDate())}/${pad(brt.getUTCMonth() + 1)} ${pad(brt.getUTCHours())}:${pad(brt.getUTCMinutes())}`;
+    }
+
+    function renderSolMsgItem(msg, pontoId, prefix) {
+      const tipo = msg.origem === 'solicitante' ? 'msg-solicitante' : 'msg-piloto';
+      const pendente = msg.origem === 'piloto' && !msg.aprovado_pilotos;
+      const autorInfo = msg.autor_tel ? `${msg.autor_nome} — ${msg.autor_tel}` : msg.autor_nome;
+      const isMine = msg.origem === 'solicitante' && msg.autor_nome === nomeOficial && msg.autor_pin === pinOficial;
+
+      let actions = '';
+      if (pendente) {
+        actions += `<button class="msg-action-btn aprovar" data-ponto="${pontoId}" data-msg="${msg.id}">Aprovar p/ pilotos</button>`;
+      } else if (msg.origem === 'piloto' && msg.aprovado_pilotos) {
+        actions += `<span class="msg-action-btn aprovar aprovado">Visível p/ pilotos</span>`;
+      }
+      if (isMine) {
+        actions += `<button class="msg-action-btn editar" data-ponto="${pontoId}" data-msg="${msg.id}" data-prefix="${prefix}">Editar</button>`;
+      }
+
+      return `<div class="msg-item ${tipo} ${pendente ? 'msg-pendente' : ''}" id="${prefix}msg-${msg.id}">
+        <div class="msg-autor">${autorInfo}${pendente ? ' <span class="msg-pendente-tag">· pendente aprovação</span>' : ''}</div>
+        <div class="msg-texto">${msg.texto.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+        <div class="msg-data">${formatMsgTime(msg.timestamp)}</div>
+        ${actions ? `<div class="msg-actions">${actions}</div>` : ''}
+      </div>`;
+    }
+
+    function setupMsgForm(prefix, pontoId, db) {
+      const addBtn = document.getElementById(`${prefix}msg-add-${pontoId}`);
+      const form = document.getElementById(`${prefix}msg-form-${pontoId}`);
+      const textarea = document.getElementById(`${prefix}msg-text-${pontoId}`);
+      const sendBtn = document.getElementById(`${prefix}msg-send-${pontoId}`);
+      const cancelBtn = document.getElementById(`${prefix}msg-cancel-${pontoId}`);
+      if (!addBtn || !form) return;
+
+      addBtn.addEventListener('click', () => {
+        form.classList.add('visible');
+        addBtn.style.display = 'none';
+        textarea.focus();
+      });
+      textarea.addEventListener('input', () => { sendBtn.disabled = !textarea.value.trim(); });
+      cancelBtn.addEventListener('click', () => {
+        form.classList.remove('visible');
+        addBtn.style.display = '';
+        textarea.value = '';
+        sendBtn.disabled = true;
+      });
+      sendBtn.addEventListener('click', async () => {
+        const texto = textarea.value.trim();
+        if (!texto) return;
+        sendBtn.disabled = true;
+        try {
+          await push(ref(db, `mensagens/${pontoId}`), {
+            autor_nome: nomeOficial,
+            autor_pin: pinOficial,
+            texto,
+            origem: 'solicitante',
+            aprovado_pilotos: true,
+            timestamp: serverTimestamp()
+          });
+          textarea.value = '';
+          form.classList.remove('visible');
+          addBtn.style.display = '';
+        } catch { sendBtn.disabled = false; }
+      });
+    }
+
+    function setupMsgActions(container, db) {
+      container.querySelectorAll('.msg-action-btn.aprovar:not(.aprovado)').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const pontoId = btn.dataset.ponto;
+          const msgId = btn.dataset.msg;
+          await update(ref(db, `mensagens/${pontoId}/${msgId}`), { aprovado_pilotos: true });
+        });
+      });
+      container.querySelectorAll('.msg-action-btn.editar').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const pontoId = btn.dataset.ponto;
+          const msgId = btn.dataset.msg;
+          const prefix = btn.dataset.prefix;
+          const msgEl = document.getElementById(`${prefix}msg-${msgId}`);
+          const textoEl = msgEl.querySelector('.msg-texto');
+          const oldText = textoEl.textContent;
+          textoEl.innerHTML = `<textarea class="msg-edit-area" style="background:#0f1117;border:1px solid #4a5568;border-radius:4px;padding:6px 8px;font-size:12px;color:#e8eaf0;width:100%;min-height:40px;resize:vertical;font-family:inherit;outline:none;">${oldText.replace(/</g,'&lt;')}</textarea>
+            <div style="display:flex;gap:6px;margin-top:4px;">
+              <button class="msg-action-btn" id="msg-save-${msgId}" style="border-color:#4caf50;color:#4caf50;">Salvar</button>
+              <button class="msg-action-btn" id="msg-edit-cancel-${msgId}">Cancelar</button>
+            </div>`;
+          const area = textoEl.querySelector('textarea');
+          area.focus();
+          document.getElementById(`msg-save-${msgId}`).addEventListener('click', async () => {
+            const novo = area.value.trim();
+            if (novo && novo !== oldText) {
+              await update(ref(db, `mensagens/${pontoId}/${msgId}`), { texto: novo });
+            }
+          });
+          document.getElementById(`msg-edit-cancel-${msgId}`).addEventListener('click', () => {
+            textoEl.textContent = oldText;
+          });
+        });
+      });
+    }
+
+    // Realtime listener para mensagens — atualiza todas as abas
+    let allMensagens = {};
+    onValue(ref(db, 'mensagens'), snapshot => {
+      allMensagens = snapshot.val() || {};
+      // Re-render mensagens nas listas existentes
+      renderMsgsForTab('tsol-');
+      renderMsgsForTab('msol-');
+    });
+
+    function renderMsgsForTab(prefix) {
+      const snap = allMensagens;
+      Object.keys(snap).forEach(pontoId => {
+        const listEl = document.getElementById(`${prefix}msgs-list-${pontoId}`);
+        if (!listEl) return;
+        const msgs = snap[pontoId] || {};
+        const sorted = Object.entries(msgs)
+          .map(([k, v]) => ({ id: k, ...v }))
+          .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+        listEl.innerHTML = sorted.map(m => renderSolMsgItem(m, pontoId, prefix)).join('');
+        setupMsgActions(listEl, db);
+      });
+    }
+
     // ── TODAS AS SOLICITAÇÕES ──
     async function renderTodas() {
       todasInitialized = true;
@@ -875,6 +1047,9 @@
       lista.querySelectorAll('.fotos-btn').forEach(btn => {
         btn.addEventListener('click', () => lbOpen(btn.dataset.id, imgMap));
       });
+
+      todos.forEach(item => setupMsgForm('tsol-', item.id, db));
+      renderMsgsForTab('tsol-');
 
       unsubTodas = onValue(ref(db, 'pontos'), snap => {
         const data = snap.val() || {};
@@ -966,6 +1141,9 @@
       lista.querySelectorAll('.fotos-btn').forEach(btn => {
         btn.addEventListener('click', () => lbOpen(btn.dataset.id, imgMap));
       });
+
+      sols.forEach(sol => setupMsgForm('msol-', sol.id, db));
+      renderMsgsForTab('msol-');
 
       unsubMinhas = onValue(ref(db, 'pontos'), snap => {
         const data = snap.val() || {};
