@@ -840,6 +840,12 @@
           }
         }
 
+        // Esconder form de comentário quando concluído
+        const msgAddBtn = document.getElementById(`msg-add-btn-${ponto.id}`);
+        const msgForm = document.getElementById(`msg-form-${ponto.id}`);
+        if (msgAddBtn) msgAddBtn.style.display = drive ? 'none' : '';
+        if (msgForm && drive) msgForm.classList.remove('visible');
+
         const card = document.getElementById(`card-${ponto.id}`);
         if (!card) return;
 

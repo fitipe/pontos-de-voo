@@ -1064,6 +1064,12 @@
           if (card) { card.className = cardClass(state); card.dataset.status = status; }
           updateCardState('tsol-', item.id, state);
 
+          // Esconder form de comentário quando concluído
+          const tMsgAdd = document.getElementById(`tsol-msg-add-${item.id}`);
+          const tMsgForm = document.getElementById(`tsol-msg-form-${item.id}`);
+          if (tMsgAdd) tMsgAdd.style.display = state.drive ? 'none' : '';
+          if (tMsgForm && state.drive) tMsgForm.classList.remove('visible');
+
           if (markersTodas[item.id]) {
             markersTodas[item.id].marker.setStyle({ color: cor, fillColor: cor });
             markersTodas[item.id].status = status;
@@ -1157,6 +1163,12 @@
           const card = document.getElementById(`msol-${sol.id}`);
           if (card) { card.className = cardClass(state); card.dataset.status = status; }
           updateCardState('msol-', sol.id, state);
+
+          // Esconder form de comentário quando concluído
+          const mMsgAdd = document.getElementById(`msol-msg-add-${sol.id}`);
+          const mMsgForm = document.getElementById(`msol-msg-form-${sol.id}`);
+          if (mMsgAdd) mMsgAdd.style.display = state.drive ? 'none' : '';
+          if (mMsgForm && state.drive) mMsgForm.classList.remove('visible');
 
           if (markersMinhas[sol.id]) {
             markersMinhas[sol.id].marker.setStyle({ color: cor, fillColor: cor });
