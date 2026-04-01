@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Solicitação de Vôo</title>
-  <script>(function(){var V='20260331-2';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
+  <script>(function(){var V='20260401-1';if(localStorage.getItem('appv')!==V){localStorage.setItem('appv',V);location.replace(location.pathname+'?v='+V);}else if(location.search){history.replaceState(null,'',location.pathname);}})();</script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -920,9 +920,9 @@
 
       let actions = '';
       if (pendente) {
-        actions += `<button class="msg-action-btn aprovar" data-ponto="${pontoId}" data-msg="${msg.id}">Aprovar p/ pilotos</button>`;
+        actions += `<button class="msg-action-btn aprovar" data-ponto="${pontoId}" data-msg="${msg.id}">Tornar visível na página de pilotos</button>`;
       } else if (msg.origem === 'piloto' && msg.aprovado_pilotos) {
-        actions += `<span class="msg-action-btn aprovar aprovado">Visível p/ pilotos</span>`;
+        actions += `<span class="msg-action-btn aprovar aprovado">Visível na página de pilotos</span>`;
       }
       if (isMine) {
         actions += `<button class="msg-action-btn editar" data-ponto="${pontoId}" data-msg="${msg.id}" data-prefix="${prefix}">Editar</button>`;
